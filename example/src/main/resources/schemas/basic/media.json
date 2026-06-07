@@ -1,0 +1,31 @@
+{
+    "uid": "basic.media",
+    "category": "basic",
+    "displayName": "Media",
+    "description": "Image or video with caption and alt text",
+    "fields": [
+        {
+            "name": "mediaUrl",
+            "type": "STRING",
+            "required": true
+        },
+        {
+            "name": "altText",
+            "type": "STRING",
+            "maxLength": 255
+        },
+        {
+            "name": "caption",
+            "type": "STRING",
+            "maxLength": 500
+        },
+        {
+            "name": "width",
+            "type": "INTEGER"
+        },
+        {
+            "name": "height",
+            "type": "INTEGER"
+        }
+    ]
+}

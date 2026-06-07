@@ -1,0 +1,42 @@
+{
+  "uid": "api::tag.tag",
+  "kind": "COLLECTION_TYPE",
+  "singularName": "tag",
+  "pluralName": "tags",
+  "displayName": "Tag",
+  "description": "Lightweight content tagging — many-to-many with articles",
+  "draftAndPublish": false,
+  "localized": false,
+  "fields": [
+    {
+      "name": "name",
+      "type": "STRING",
+      "required": true,
+      "maxLength": 100,
+      "unique": true
+    },
+    {
+      "name": "slug",
+      "type": "UID",
+      "required": true,
+      "maxLength": 120,
+      "target": "name"
+    },
+    {
+      "name": "color",
+      "type": "STRING",
+      "maxLength": 7,
+      "defaultValue": "#6b7280",
+      "regex": "^#[0-9a-fA-F]{6}$"
+    }
+  ],
+  "relations": [
+    {
+      "fieldName": "articles",
+      "type": "MANY_TO_MANY",
+      "target": "api::article.article",
+      "targetAttribute": "tags",
+      "joinTable": "articles_tags"
+    }
+  ]
+}

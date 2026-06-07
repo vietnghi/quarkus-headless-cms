@@ -1,0 +1,53 @@
+{
+  "uid": "shared.media",
+  "category": "shared",
+  "displayName": "Media",
+  "description": "Rich media attachment with caption, alt text, dimensions, and focal point",
+  "fields": [
+    {
+      "name": "mediaUrl",
+      "type": "STRING",
+      "required": true
+    },
+    {
+      "name": "altText",
+      "type": "STRING",
+      "maxLength": 255
+    },
+    {
+      "name": "caption",
+      "type": "STRING",
+      "maxLength": 500
+    },
+    {
+      "name": "width",
+      "type": "INTEGER",
+      "min": 0
+    },
+    {
+      "name": "height",
+      "type": "INTEGER",
+      "min": 0
+    },
+    {
+      "name": "mimeType",
+      "type": "STRING",
+      "maxLength": 100
+    },
+    {
+      "name": "fileSize",
+      "type": "INTEGER",
+      "min": 0
+    },
+    {
+      "name": "focalPointX",
+      "type": "FLOAT",
+      "defaultValue": "0.5"
+    },
+    {
+      "name": "focalPointY",
+      "type": "FLOAT",
+      "defaultValue": "0.5"
+    }
+  ]
+}

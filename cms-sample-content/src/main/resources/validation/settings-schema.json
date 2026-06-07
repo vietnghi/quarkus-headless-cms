@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/settings.json",
+  "title": "Global Settings",
+  "description": "Schema for validating Global Settings (single-type) entries",
+  "type": "object",
+  "properties": {
+    "siteName": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "Site-wide name (required)"
+    },
+    "siteDescription": {
+      "type": "string",
+      "maxLength": 300,
+      "description": "Default site meta description"
+    },
+    "logo": {
+      "type": "string",
+      "description": "Site logo URL"
+    },
+    "favicon": {
+      "type": "string",
+      "description": "Favicon URL"
+    },
+    "ogDefaultImage": {
+      "type": "string",
+      "description": "Default Open Graph image URL"
+    },
+    "socialLinks": {
+      "type": "object",
+      "properties": {
+        "twitter": { "type": "string" },
+        "github": { "type": "string" },
+        "linkedin": { "type": "string" },
+        "youtube": { "type": "string" },
+        "facebook": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "contactEmail": {
+      "type": "string",
+      "format": "email"
+    },
+    "footerText": {
+      "type": "string",
+      "description": "Footer copyright and legal text (rich text)"
+    },
+    "customHeadHtml": {
+      "type": "string",
+      "description": "Custom HTML to inject into <head>"
+    },
+    "customFooterHtml": {
+      "type": "string",
+      "description": "Custom HTML to inject before </body>"
+    }
+  },
+  "required": ["siteName"],
+  "additionalProperties": true
+}

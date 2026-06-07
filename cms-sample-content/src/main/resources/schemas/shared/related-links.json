@@ -1,0 +1,40 @@
+{
+  "uid": "shared.related-links",
+  "category": "shared",
+  "displayName": "Related Links",
+  "description": "A set of related external or internal links with labels",
+  "fields": [
+    {
+      "name": "label",
+      "type": "STRING",
+      "required": true,
+      "maxLength": 100
+    },
+    {
+      "name": "url",
+      "type": "STRING",
+      "required": true,
+      "maxLength": 500
+    },
+    {
+      "name": "description",
+      "type": "STRING",
+      "maxLength": 300
+    },
+    {
+      "name": "newWindow",
+      "type": "BOOLEAN",
+      "defaultValue": "true"
+    },
+    {
+      "name": "icon",
+      "type": "STRING",
+      "maxLength": 50
+    },
+    {
+      "name": "sortOrder",
+      "type": "INTEGER",
+      "defaultValue": "0"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+    "uid": "api::author.author",
+    "kind": "COLLECTION_TYPE",
+    "singularName": "author",
+    "pluralName": "authors",
+    "displayName": "Author",
+    "description": "Content author profile",
+    "draftAndPublish": false,
+    "localized": false,
+    "fields": [
+        {
+            "name": "name",
+            "type": "STRING",
+            "required": true,
+            "maxLength": 200
+        },
+        {
+            "name": "email",
+            "type": "EMAIL"
+        },
+        {
+            "name": "bio",
+            "type": "RICHTEXT"
+        },
+        {
+            "name": "avatar",
+            "type": "MEDIA"
+        }
+    ],
+    "relations": [
+        {
+            "fieldName": "articles",
+            "type": "ONE_TO_MANY",
+            "target": "api::article.article",
+            "targetAttribute": "author"
+        }
+    ]
+}

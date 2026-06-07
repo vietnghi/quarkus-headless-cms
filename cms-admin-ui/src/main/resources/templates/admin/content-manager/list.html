@@ -1,0 +1,161 @@
+{#include admin/base title=title}
+{#body}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">{title}</h1>
+            <p class="text-sm text-gray-500 mt-1">{contentType.uid} &middot; {contentType.kind.name() == 'SINGLE_TYPE' ? 'Single Type' : 'Collection Type'}</p>
+        </div>
+        <a href="/admin/content-manager/{contentType.uid}/create{locale ? '?locale=' + locale : ''}"
+           class="inline-flex items-center gap-2 px-4 py-2 bg-cms-600 text-white rounded-lg hover:bg-cms-700 text-sm font-medium transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Add New {contentType.singularName}
+        </a>
+    </div>
+
+    <!-- Filters & Status Tabs -->
+    <div class="flex items-center gap-3 flex-wrap">
+        <div class="flex bg-white rounded-lg border border-gray-200 p-1">
+            <a href="/admin/content-manager/{contentType.uid}?locale={locale}"
+               class="px-3 py-1.5 rounded-md text-sm font-medium transition-colors {status == null ? 'bg-cms-600 text-white' : 'text-gray-600 hover:bg-gray-100'}">
+                All
+            </a>
+            <a href="/admin/content-manager/{contentType.uid}?status=draft&locale={locale}"
+               class="px-3 py-1.5 rounded-md text-sm font-medium transition-colors {status == 'draft' ? 'bg-cms-600 text-white' : 'text-gray-600 hover:bg-gray-100'}">
+                Drafts
+            </a>
+            <a href="/admin/content-manager/{contentType.uid}?status=published&locale={locale}"
+               class="px-3 py-1.5 rounded-md text-sm font-medium transition-colors {status == 'published' ? 'bg-cms-600 text-white' : 'text-gray-600 hover:bg-gray-100'}">
+                Published
+            </a>
+            <a href="/admin/content-manager/{contentType.uid}?status=unpublished&locale={locale}"
+               class="px-3 py-1.5 rounded-md text-sm font-medium transition-colors {status == 'unpublished' ? 'bg-cms-600 text-white' : 'text-gray-600 hover:bg-gray-100'}">
+                Unpublished
+            </a>
+        </div>
+
+        <div class="text-sm text-gray-500">
+            {total} {total == 1 ? 'entry' : 'entries'}
+        </div>
+    </div>
+
+    <!-- Entries Table -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        {#if entries.isEmpty()}
+        <div class="px-6 py-16 text-center">
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-1">No entries yet</h3>
+            <p class="text-sm text-gray-500 mb-4">Create your first {contentType.singularName} entry to get started.</p>
+            <a href="/admin/content-manager/{contentType.uid}/create" class="inline-flex items-center gap-2 px-4 py-2 bg-cms-600 text-white rounded-lg text-sm font-medium hover:bg-cms-700">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                Create {contentType.singularName}
+            </a>
+        </div>
+        {#else}
+        <table class="w-full">
+            <thead>
+                <tr class="bg-gray-50 border-b border-gray-100">
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">ID</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Title / Data</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Locale</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Updated</th>
+                    <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50" id="entries-table-body">
+                {#for entry in entries}
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-4">
+                        <span class="text-sm font-mono text-gray-400 bg-gray-100 px-2 py-0.5 rounded">{entry.id}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <a href="/admin/content-manager/{contentType.uid}/{entry.documentId}?locale={entry.locale}"
+                           class="text-sm font-medium text-cms-600 hover:text-cms-700">
+                            {#if entry.data && entry.data.containsKey("title")}
+                                {entry.data.get("title").toString()}
+                            {#else if entry.data && entry.data.containsKey("name")}
+                                {entry.data.get("name").toString()}
+                            {#else}
+                                {entry.documentId}
+                            {/if}
+                        </a>
+                    </td>
+                    <td class="px-6 py-4">
+                        {#if entry.status == 'published'}
+                        <span class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-green-50 text-green-700 font-medium">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Published
+                        </span>
+                        {#else if entry.status == 'draft'}
+                        <span class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-yellow-50 text-yellow-700 font-medium">
+                            <span class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span> Draft
+                        </span>
+                        {#else}
+                        <span class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600 font-medium">
+                            <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> {entry.status}
+                        </span>
+                        {/if}
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500">{entry.locale}</td>
+                    <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                        {entry.updatedAt ? entry.updatedAt.toString().substring(0, 10) : '-'}
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <div class="flex items-center justify-end gap-1">
+                            <a href="/admin/content-manager/{contentType.uid}/{entry.documentId}?locale={entry.locale}"
+                               class="p-1.5 text-gray-400 hover:text-cms-600 hover:bg-cms-50 rounded-lg transition-colors" title="Edit">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                            </a>
+                            <form method="POST" action="/admin/content-manager/{contentType.uid}/{entry.documentId}/delete"
+                                  onsubmit="return confirm('Delete this entry? This cannot be undone.')" class="inline">
+                                <button type="submit" class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {/for}
+            </tbody>
+        </table>
+        {/if}
+    </div>
+
+    <!-- Pagination -->
+    {#if pageCount > 1}
+    <div class="flex items-center justify-between bg-white rounded-lg border border-gray-200 px-4 py-3">
+        <div class="text-sm text-gray-500">
+            Page {page + 1} of {pageCount} ({total} total)
+        </div>
+        <div class="flex items-center gap-1">
+            {#if page > 0}
+            <a href="/admin/content-manager/{contentType.uid}?page={page - 1}&pageSize={pageSize}{status ? '&status=' + status : ''}&locale={locale}"
+               class="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-md transition-colors">&laquo; Previous</a>
+            {#else}
+            <span class="px-3 py-1.5 text-sm text-gray-300 rounded-md">&laquo; Previous</span>
+            {/if}
+
+            {#for i in 1..pageCount}
+                {#if i == page + 1}
+                <span class="px-3 py-1.5 text-sm bg-cms-600 text-white rounded-md font-medium">{i}</span>
+                {#else}
+                <a href="/admin/content-manager/{contentType.uid}?page={i - 1}&pageSize={pageSize}{status ? '&status=' + status : ''}&locale={locale}"
+                   class="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-md transition-colors">{i}</a>
+                {/if}
+            {/for}
+
+            {#if page + 1 < pageCount}
+            <a href="/admin/content-manager/{contentType.uid}?page={page + 1}&pageSize={pageSize}{status ? '&status=' + status : ''}&locale={locale}"
+               class="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-md transition-colors">Next &raquo;</a>
+            {#else}
+            <span class="px-3 py-1.5 text-sm text-gray-300 rounded-md">Next &raquo;</span>
+            {/if}
+        </div>
+    </div>
+    {/if}
+</div>
+{/body}
+{/include}

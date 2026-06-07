@@ -1,0 +1,9 @@
+{
+  "heroTitle": "Welcome to the Quarkus CMS Demo",
+  "heroSubtitle": "A powerful, extensible headless content management system built on Quarkus",
+  "heroCtaText": "Get Started",
+  "heroCtaUrl": "/docs",
+  "aboutTitle": "About This Demo",
+  "aboutText": "## About This Demo\n\nThis application showcases the capabilities of the Quarkus Headless CMS extension. It demonstrates schema-driven content types, draft/publish workflows, content relations, and API-driven content management.\n\nThe sample content includes articles, authors, categories, and tags — all linked together through relations and searchable via both REST and GraphQL APIs.",
+  "featuredArticleIds": []
+}

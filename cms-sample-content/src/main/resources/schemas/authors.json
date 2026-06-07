@@ -1,0 +1,59 @@
+{
+  "uid": "api::author.author",
+  "kind": "COLLECTION_TYPE",
+  "singularName": "author",
+  "pluralName": "authors",
+  "displayName": "Author",
+  "description": "Content author/contributor profile with social links and bio",
+  "draftAndPublish": false,
+  "localized": false,
+  "fields": [
+    {
+      "name": "name",
+      "type": "STRING",
+      "required": true,
+      "maxLength": 200
+    },
+    {
+      "name": "slug",
+      "type": "UID",
+      "required": true,
+      "maxLength": 255,
+      "target": "name"
+    },
+    {
+      "name": "email",
+      "type": "EMAIL"
+    },
+    {
+      "name": "jobTitle",
+      "type": "STRING",
+      "maxLength": 150
+    },
+    {
+      "name": "bio",
+      "type": "RICHTEXT"
+    },
+    {
+      "name": "avatar",
+      "type": "MEDIA"
+    },
+    {
+      "name": "socialLinks",
+      "type": "JSON"
+    },
+    {
+      "name": "featuredAuthor",
+      "type": "BOOLEAN",
+      "defaultValue": "false"
+    }
+  ],
+  "relations": [
+    {
+      "fieldName": "articles",
+      "type": "ONE_TO_MANY",
+      "target": "api::article.article",
+      "targetAttribute": "author"
+    }
+  ]
+}

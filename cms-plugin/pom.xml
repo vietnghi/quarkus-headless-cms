@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.quarkus.cms</groupId>
+        <artifactId>quarkus-headless-cms-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>cms-plugin</artifactId>
+    <name>Quarkus Headless CMS - Plugin System</name>
+    <description>Plugin system for the Quarkus Headless CMS. Provides SPI interfaces for plugin lifecycle, content type extensions, endpoint registration, admin panel extensions, and lifecycle hooks. Supports ServiceLoader-based plugin discovery and external classloader isolation.</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.quarkus.cms</groupId>
+            <artifactId>cms-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.quarkus.cms</groupId>
+            <artifactId>cms-rest-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.quarkus.cms</groupId>
+            <artifactId>cms-custom-fields</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.quarkus.cms</groupId>
+            <artifactId>cms-webhooks</artifactId>
+        </dependency>
+
+        <!-- Quarkus Arc for CDI -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-arc</artifactId>
+        </dependency>
+
+        <!-- REST endpoint support -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-rest-jackson</artifactId>
+        </dependency>
+
+        <!-- Vert.x for event bus integration -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-vertx</artifactId>
+        </dependency>
+
+        <!-- Jackson for JSON serialization -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jackson</artifactId>
+        </dependency>
+
+        <!-- H2 database for testing -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jdbc-h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-junit5-mockito</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.27.3</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.smallrye</groupId>
+                <artifactId>jandex-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

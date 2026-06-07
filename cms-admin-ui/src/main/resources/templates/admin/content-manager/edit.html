@@ -1,0 +1,212 @@
+{#include admin/base title=title}
+{#body}
+<div class="max-w-4xl mx-auto space-y-6">
+    <!-- Back Link -->
+    <a href="/admin/content-manager/{contentType.uid}{locale ? '?locale=' + locale : ''}"
+       class="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-cms-600 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Back to {contentType.pluralName}
+    </a>
+
+    <!-- Header with Status & Actions -->
+    <div class="flex items-center justify-between bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">{title}</h1>
+            <p class="text-sm text-gray-500 mt-1">
+                {contentType.uid}
+                {#if entry}
+                &middot; Document ID: <code class="font-mono text-xs bg-gray-100 px-1.5 py-0.5 rounded">{entry.documentId}</code>
+                &middot; Locale: {entry.locale}
+                {/if}
+            </p>
+        </div>
+        {#if entry}
+        <div class="flex items-center gap-2">
+            {#if entry.status == 'draft'}
+            <form method="POST" action="/admin/content-manager/{contentType.uid}/{entry.documentId}/publish" class="inline">
+                <input type="hidden" name="locale" value="{entry.locale}">
+                <button type="submit"
+                        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium transition-colors">
+                    Publish
+                </button>
+            </form>
+            <form method="POST" action="/admin/content-manager/{contentType.uid}/{entry.documentId}/delete"
+                  onsubmit="return confirm('Delete this entry permanently?')" class="inline">
+                <button type="submit"
+                        class="px-4 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 text-sm font-medium transition-colors">
+                    Delete
+                </button>
+            </form>
+            {#else if entry.status == 'published'}
+            <form method="POST" action="/admin/content-manager/{contentType.uid}/{entry.documentId}/unpublish" class="inline">
+                <input type="hidden" name="locale" value="{entry.locale}">
+                <button type="submit"
+                        class="px-4 py-2 border border-yellow-200 text-yellow-600 rounded-lg hover:bg-yellow-50 text-sm font-medium transition-colors">
+                    Unpublish
+                </button>
+            </form>
+            {/if}
+        </div>
+        {/if}
+    </div>
+
+    <!-- Error Message -->
+    {#if errorMessage??}
+    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+        {errorMessage}
+    </div>
+    {/if}
+
+    <!-- Success Flash -->
+    {#if published}
+    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        Entry published successfully.
+    </div>
+    {/if}
+    {#if saved}
+    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        Changes saved successfully.
+    </div>
+    {/if}
+
+    <!-- Edit Form -->
+    <form method="POST"
+          action="{isNew ? '/admin/content-manager/' + contentType.uid : '/admin/content-manager/' + contentType.uid + '/' + entry.documentId + '/update'}"
+          class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <input type="hidden" name="locale" value="{locale}">
+
+        <!-- Form Fields -->
+        <div class="p-6 space-y-5">
+            {#for field in contentType.fields}
+                {#if !field.isPrivate()}
+                <div class="space-y-1.5">
+                    <label for="field_{field.name}" class="block text-sm font-medium text-gray-700">
+                        {#if field.name == 'title'}Title
+                        {#else if field.name == 'slug'}Slug
+                        {#else if field.name == 'body'}Body
+                        {#else if field.name == 'excerpt'}Excerpt
+                        {#else if field.name == 'name'}Name
+                        {#else}{field.name}
+                        {/if}
+                        {#if field.required}<span class="text-red-500">*</span>{/if}
+                    </label>
+
+                    {#switch field.type.name()}
+                    {#case 'TEXT'}
+                    <textarea id="field_{field.name}" name="data[{field.name}]"
+                              rows="4"
+                              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cms-500 focus:border-transparent"
+                              placeholder="{field.name}">{#if fieldValues.containsKey(field.name)}{fieldValues.get(field.name).toString()}{/if}</textarea>
+                    {#case 'RICHTEXT'}
+                    <textarea id="field_{field.name}" name="data[{field.name}]"
+                              rows="12"
+                              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-cms-500 focus:border-transparent"
+                              placeholder="Enter rich text content...">{#if fieldValues.containsKey(field.name)}{fieldValues.get(field.name).toString()}{/if}</textarea>
+                    {#case 'BOOLEAN'}
+                    <label class="inline-flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="field_{field.name}" name="data[{field.name}]" value="true"
+                               class="rounded border-gray-300 text-cms-600 focus:ring-cms-500"
+                               {#if fieldValues.containsKey(field.name) && fieldValues.get(field.name).toString() == 'true'}checked{/if}>
+                        <span class="text-sm text-gray-600">Enabled</span>
+                    </label>
+                    {#case 'INTEGER'}
+                    <input type="number" id="field_{field.name}" name="data[{field.name}]"
+                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cms-500 focus:border-transparent"
+                           placeholder="0"
+                           value="{#if fieldValues.containsKey(field.name)}{fieldValues.get(field.name).toString()}{/if}">
+                    {#case 'FLOAT'}
+                    <input type="number" step="any" id="field_{field.name}" name="data[{field.name}]"
+                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cms-500 focus:border-transparent"
+                           placeholder="0.0"
+                           value="{#if fieldValues.containsKey(field.name)}{fieldValues.get(field.name).toString()}{/if}">
+                    {#case 'DATE'}
+                    <input type="date" id="field_{field.name}" name="data[{field.name}]"
+                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cms-500 focus:border-transparent"
+                           value="{#if fieldValues.containsKey(field.name)}{fieldValues.get(field.name).toString()}{/if}">
+                    {#case 'DATETIME'}
+                    <input type="datetime-local" id="field_{field.name}" name="data[{field.name}]"
+                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cms-500 focus:border-transparent"
+                           value="{#if fieldValues.containsKey(field.name)}{fieldValues.get(field.name).toString()}{/if}">
+                    {#case 'EMAIL'}
+                    <input type="email" id="field_{field.name}" name="data[{field.name}]"
+                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cms-500 focus:border-transparent"
+                           value="{#if fieldValues.containsKey(field.name)}{fieldValues.get(field.name).toString()}{/if}">
+                    {#case 'PASSWORD'}
+                    <input type="password" id="field_{field.name}" name="data[{field.name}]"
+                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cms-500 focus:border-transparent"
+                           value="{#if fieldValues.containsKey(field.name)}{fieldValues.get(field.name).toString()}{/if}">
+                    {#case 'UID'}
+                    <input type="text" id="field_{field.name}" name="data[{field.name}]"
+                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-gray-50 font-mono focus:outline-none focus:ring-2 focus:ring-cms-500 focus:border-transparent"
+                           value="{#if fieldValues.containsKey(field.name)}{fieldValues.get(field.name).toString()}{/if}">
+                    {#case 'ENUMERATION'}
+                    <select id="field_{field.name}" name="data[{field.name}]"
+                            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cms-500 focus:border-transparent">
+                        <option value="">-- Select --</option>
+                        {#for val in field.enumValues}
+                        <option value="{val}" {#if fieldValues.containsKey(field.name) && fieldValues.get(field.name).toString() == val}selected{/if}>{val}</option>
+                        {/for}
+                    </select>
+                    {#case 'MEDIA'}
+                    <input type="text" id="field_{field.name}" name="data[{field.name}]"
+                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cms-500 focus:border-transparent"
+                           placeholder="Media URL or file path"
+                           value="{#if fieldValues.containsKey(field.name)}{fieldValues.get(field.name).toString()}{/if}">
+                    {#case 'JSON'}
+                    <textarea id="field_{field.name}" name="data[{field.name}]"
+                              rows="6"
+                              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-cms-500 focus:border-transparent"
+                              placeholder="{}">{#if fieldValues.containsKey(field.name)}{fieldValues.get(field.name).toString()}{/if}</textarea>
+                    {#case 'COMPONENT'}
+                    <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                        <p class="text-sm text-gray-500">
+                            <span class="font-medium text-cms-600">{field.component ?: 'Component'}</span>
+                            — component field (managed via component builder)
+                        </p>
+                    </div>
+                    {#case 'RELATION'}
+                    <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                        <p class="text-sm text-gray-500">
+                            <span class="font-medium text-purple-600">Relation</span> to {field.target ?: 'unknown'}
+                            — managed via relation editor
+                        </p>
+                    </div>
+                    {#case 'DYNAMIC_ZONE'}
+                    <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                        <p class="text-sm text-gray-500">
+                            <span class="font-medium text-orange-600">Dynamic Zone</span>
+                            — managed via zone builder
+                        </p>
+                    </div>
+                    {#default}
+                    <input type="text" id="field_{field.name}" name="data[{field.name}]"
+                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cms-500 focus:border-transparent"
+                           placeholder="{field.name}"
+                           value="{#if fieldValues.containsKey(field.name)}{fieldValues.get(field.name).toString()}{/if}">
+                    {/switch}
+
+                    {#if field.description??}
+                    <p class="text-xs text-gray-400 mt-1">{field.description}</p>
+                    {/if}
+                </div>
+                {/if}
+            {/for}
+        </div>
+
+        <!-- Form Footer -->
+        <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+            <a href="/admin/content-manager/{contentType.uid}{locale ? '?locale=' + locale : ''}"
+               class="text-sm text-gray-500 hover:text-gray-700 transition-colors">
+                Cancel
+            </a>
+            <button type="submit"
+                    class="px-6 py-2 bg-cms-600 text-white rounded-lg hover:bg-cms-700 text-sm font-medium transition-colors">
+                {isNew ? 'Create' : 'Save Changes'}
+            </button>
+        </div>
+    </form>
+</div>
+{/body}
+{/include}

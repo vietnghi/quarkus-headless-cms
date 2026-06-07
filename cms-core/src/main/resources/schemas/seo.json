@@ -1,0 +1,26 @@
+{
+  "uid": "shared.seo",
+  "category": "shared",
+  "displayName": "SEO",
+  "description": "Search engine optimization metadata",
+  "fields": [
+    {
+      "name": "metaTitle",
+      "type": "STRING",
+      "maxLength": 60
+    },
+    {
+      "name": "metaDescription",
+      "type": "TEXT",
+      "maxLength": 160
+    },
+    {
+      "name": "keywords",
+      "type": "TEXT"
+    },
+    {
+      "name": "ogImage",
+      "type": "MEDIA"
+    }
+  ]
+}

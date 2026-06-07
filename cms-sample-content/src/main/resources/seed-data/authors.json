@@ -1,0 +1,54 @@
+[
+  {
+    "name": "Alice Johnson",
+    "slug": "alice-johnson",
+    "email": "alice@example.com",
+    "jobTitle": "Senior Technical Writer",
+    "bio": "Alice is a senior technical writer and software engineer with over a decade of experience in developer documentation and content strategy. She specializes in making complex technical concepts accessible to a broad audience.",
+    "featuredAuthor": true,
+    "socialLinks": {
+      "twitter": "@alicejohnson",
+      "github": "alicejohnson",
+      "linkedin": "https://linkedin.com/in/alicejohnson"
+    }
+  },
+  {
+    "name": "Bob Smith",
+    "slug": "bob-smith",
+    "email": "bob@example.com",
+    "jobTitle": "Full-Stack Developer",
+    "bio": "Bob is a full-stack developer and content creator focusing on web technologies, modern JavaScript frameworks, and user experience design. He believes in building content systems that work for both editors and end-users.",
+    "featuredAuthor": false,
+    "socialLinks": {
+      "twitter": "@bobsmith",
+      "github": "bobsmithdev",
+      "website": "https://bobsmith.dev"
+    }
+  },
+  {
+    "name": "Dr. Maria Garcia",
+    "slug": "maria-garcia",
+    "email": "maria@example.com",
+    "jobTitle": "Research Scientist & Science Communicator",
+    "bio": "Maria holds a PhD in Computer Science and is passionate about making scientific research accessible to the public. She writes about AI, quantum computing, and the intersection of technology and society.",
+    "featuredAuthor": true,
+    "socialLinks": {
+      "twitter": "@mariagarcia",
+      "linkedin": "https://linkedin.com/in/mariagarcia",
+      "mastodon": "@mariagarcia@mastodon.social"
+    }
+  },
+  {
+    "name": "James Wilson",
+    "slug": "james-wilson",
+    "email": "james@example.com",
+    "jobTitle": "UX Designer & Design Systems Lead",
+    "bio": "James is a UX designer passionate about design systems, accessibility, and human-centered design. He writes about design processes, user research, and creating inclusive digital experiences.",
+    "featuredAuthor": false,
+    "socialLinks": {
+      "twitter": "@jameswilson",
+      "github": "jameswilsonux",
+      "website": "https://jameswilson.design"
+    }
+  }
+]

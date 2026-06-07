@@ -1,0 +1,59 @@
+{
+  "uid": "api::article.article",
+  "kind": "COLLECTION_TYPE",
+  "singularName": "article",
+  "pluralName": "articles",
+  "displayName": "Article",
+  "description": "A blog article with author relations and SEO metadata",
+  "draftAndPublish": true,
+  "localized": true,
+  "fields": [
+    {
+      "name": "title",
+      "type": "STRING",
+      "required": true,
+      "maxLength": 255
+    },
+    {
+      "name": "slug",
+      "type": "UID",
+      "required": true,
+      "target": "title"
+    },
+    {
+      "name": "body",
+      "type": "RICHTEXT"
+    },
+    {
+      "name": "excerpt",
+      "type": "TEXT",
+      "maxLength": 500
+    },
+    {
+      "name": "published",
+      "type": "BOOLEAN",
+      "defaultValue": "false"
+    },
+    {
+      "name": "seo",
+      "type": "COMPONENT",
+      "component": "shared.seo",
+      "repeatable": false
+    }
+  ],
+  "relations": [
+    {
+      "fieldName": "author",
+      "type": "MANY_TO_ONE",
+      "target": "api::author.author",
+      "targetAttribute": "articles"
+    },
+    {
+      "fieldName": "categories",
+      "type": "MANY_TO_MANY",
+      "target": "api::category.category",
+      "targetAttribute": "articles",
+      "joinTable": "articles_categories"
+    }
+  ]
+}

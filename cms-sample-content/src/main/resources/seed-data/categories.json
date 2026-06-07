@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Technology",
+    "slug": "technology",
+    "description": "Articles about software engineering, hardware, cloud infrastructure, and emerging technology trends.",
+    "color": "#6366f1",
+    "icon": "laptop",
+    "sortOrder": 1
+  },
+  {
+    "name": "Design",
+    "slug": "design",
+    "description": "UI/UX design, visual design systems, typography, color theory, and creative processes.",
+    "color": "#ec4899",
+    "icon": "palette",
+    "sortOrder": 2
+  },
+  {
+    "name": "Science",
+    "slug": "science",
+    "description": "Scientific discoveries, research breakthroughs, and explorations of the natural world.",
+    "color": "#10b981",
+    "icon": "flask-conical",
+    "sortOrder": 3
+  },
+  {
+    "name": "DevOps",
+    "slug": "devops",
+    "description": "CI/CD pipelines, containerization, infrastructure as code, monitoring, and site reliability engineering.",
+    "color": "#f59e0b",
+    "icon": "container",
+    "sortOrder": 4
+  },
+  {
+    "name": "Open Source",
+    "slug": "open-source",
+    "description": "Open source software, community contributions, licensing, and collaborative development.",
+    "color": "#8b5cf6",
+    "icon": "github",
+    "sortOrder": 5
+  }
+]

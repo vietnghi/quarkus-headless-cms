@@ -1,0 +1,28 @@
+{
+    "uid": "basic.seo",
+    "category": "basic",
+    "displayName": "SEO",
+    "description": "Search engine optimization metadata",
+    "fields": [
+        {
+            "name": "metaTitle",
+            "type": "STRING",
+            "maxLength": 70
+        },
+        {
+            "name": "metaDescription",
+            "type": "TEXT",
+            "maxLength": 160
+        },
+        {
+            "name": "metaImage",
+            "type": "MEDIA",
+            "required": false
+        },
+        {
+            "name": "keywords",
+            "type": "STRING",
+            "maxLength": 255
+        }
+    ]
+}

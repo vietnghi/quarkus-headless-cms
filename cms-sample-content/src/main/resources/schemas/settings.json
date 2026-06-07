@@ -1,0 +1,68 @@
+{
+  "uid": "api::global.global",
+  "kind": "SINGLE_TYPE",
+  "singularName": "setting",
+  "pluralName": "settings",
+  "displayName": "Global Settings",
+  "description": "Global site-wide configuration: branding, SEO defaults, social links, and operational settings",
+  "draftAndPublish": false,
+  "localized": true,
+  "fields": [
+    {
+      "name": "siteName",
+      "type": "STRING",
+      "required": true,
+      "maxLength": 100,
+      "defaultValue": "My CMS Site",
+      "localized": true
+    },
+    {
+      "name": "siteDescription",
+      "type": "TEXT",
+      "maxLength": 300,
+      "localized": true
+    },
+    {
+      "name": "logo",
+      "type": "MEDIA"
+    },
+    {
+      "name": "favicon",
+      "type": "MEDIA"
+    },
+    {
+      "name": "ogDefaultImage",
+      "type": "MEDIA"
+    },
+    {
+      "name": "socialLinks",
+      "type": "JSON"
+    },
+    {
+      "name": "contactEmail",
+      "type": "EMAIL"
+    },
+    {
+      "name": "footerText",
+      "type": "RICHTEXT",
+      "localized": true
+    },
+    {
+      "name": "customHeadHtml",
+      "type": "TEXT"
+    },
+    {
+      "name": "customFooterHtml",
+      "type": "TEXT"
+    },
+    {
+      "name": "seo",
+      "type": "COMPONENT",
+      "component": "shared.seo",
+      "repeatable": false
+    }
+  ],
+  "components": [
+    "shared.seo"
+  ]
+}

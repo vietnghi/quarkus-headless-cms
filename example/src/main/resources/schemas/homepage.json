@@ -1,0 +1,34 @@
+{
+    "uid": "api::homepage.homepage",
+    "kind": "SINGLE_TYPE",
+    "singularName": "homepage",
+    "pluralName": "homepages",
+    "displayName": "Homepage",
+    "description": "Homepage content managed as a single entry",
+    "draftAndPublish": true,
+    "localized": false,
+    "fields": [
+        {
+            "name": "heroTitle",
+            "type": "STRING",
+            "required": true,
+            "maxLength": 200
+        },
+        {
+            "name": "heroSubtitle",
+            "type": "STRING",
+            "maxLength": 300
+        },
+        {
+            "name": "aboutText",
+            "type": "RICHTEXT"
+        },
+        {
+            "name": "heroImage",
+            "type": "MEDIA"
+        }
+    ],
+    "components": [
+        "basic.seo"
+    ]
+}

@@ -1,0 +1,16 @@
+# Quarkus Headless CMS Extension
+name: quarkus-headless-cms
+description: A high-performance, lightweight headless CMS built on Quarkus, inspired by Strapi v5 architecture.
+
+metadata:
+  keywords:
+    - cms
+    - headless-cms
+    - content-management
+    - strapi
+    - api
+  categories:
+    - web
+    - data
+  status: experimental
+  guide: https://github.com/quarkus-headless-cms

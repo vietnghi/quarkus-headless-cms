@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/category.json",
+  "title": "Category",
+  "description": "Schema for validating Category content entries",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "Category display name (required)"
+    },
+    "slug": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "description": "URL-friendly slug"
+    },
+    "description": {
+      "type": "string",
+      "description": "Category description"
+    },
+    "color": {
+      "type": "string",
+      "pattern": "^#[0-9a-fA-F]{6}$",
+      "default": "#6366f1",
+      "description": "Hex color for category badge"
+    },
+    "icon": {
+      "type": "string",
+      "maxLength": 50,
+      "description": "Icon identifier (e.g., Lucide icon name)"
+    },
+    "sortOrder": {
+      "type": "integer",
+      "default": 0,
+      "description": "Display sort order"
+    }
+  },
+  "required": ["name", "slug"],
+  "additionalProperties": true
+}

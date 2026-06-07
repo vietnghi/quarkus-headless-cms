@@ -1,0 +1,46 @@
+{
+  "uid": "shared.seo",
+  "category": "shared",
+  "displayName": "SEO",
+  "description": "Search engine optimization metadata — meta title, description, OG image, and keywords",
+  "fields": [
+    {
+      "name": "metaTitle",
+      "type": "STRING",
+      "maxLength": 70
+    },
+    {
+      "name": "metaDescription",
+      "type": "TEXT",
+      "maxLength": 160
+    },
+    {
+      "name": "keywords",
+      "type": "TEXT"
+    },
+    {
+      "name": "ogImage",
+      "type": "MEDIA"
+    },
+    {
+      "name": "ogTitle",
+      "type": "STRING",
+      "maxLength": 70
+    },
+    {
+      "name": "ogDescription",
+      "type": "TEXT",
+      "maxLength": 160
+    },
+    {
+      "name": "noIndex",
+      "type": "BOOLEAN",
+      "defaultValue": "false"
+    },
+    {
+      "name": "canonicalUrl",
+      "type": "STRING",
+      "maxLength": 500
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+    "uid": "api::global.global",
+    "kind": "SINGLE_TYPE",
+    "singularName": "setting",
+    "pluralName": "settings",
+    "displayName": "Global Settings",
+    "description": "Global site-wide configuration",
+    "draftAndPublish": false,
+    "localized": false,
+    "fields": [
+        {
+            "name": "siteName",
+            "type": "STRING",
+            "required": true,
+            "defaultValue": "My CMS Site"
+        },
+        {
+            "name": "siteDescription",
+            "type": "TEXT"
+        },
+        {
+            "name": "logo",
+            "type": "MEDIA"
+        },
+        {
+            "name": "socialLinks",
+            "type": "JSON"
+        },
+        {
+            "name": "footerText",
+            "type": "RICHTEXT"
+        }
+    ]
+}

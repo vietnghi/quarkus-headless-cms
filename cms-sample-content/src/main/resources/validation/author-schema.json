@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/author.json",
+  "title": "Author",
+  "description": "Schema for validating Author content entries",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "Author display name (required)"
+    },
+    "slug": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "Contact email address"
+    },
+    "jobTitle": {
+      "type": "string",
+      "maxLength": 150,
+      "description": "Professional job title"
+    },
+    "bio": {
+      "type": "string",
+      "description": "Author biography (rich text)"
+    },
+    "avatar": {
+      "type": "string",
+      "description": "URL or media reference for the author avatar"
+    },
+    "socialLinks": {
+      "type": "object",
+      "properties": {
+        "twitter": { "type": "string" },
+        "github": { "type": "string" },
+        "linkedin": { "type": "string" },
+        "website": { "type": "string" },
+        "mastodon": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "featuredAuthor": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": ["name", "slug"],
+  "additionalProperties": true
+}

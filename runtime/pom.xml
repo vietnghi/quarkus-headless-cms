@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.quarkus.cms</groupId>
+        <artifactId>quarkus-headless-cms-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>quarkus-headless-cms</artifactId>
+    <name>Quarkus Headless CMS - Runtime</name>
+    <description>Runtime module for the Quarkus Headless CMS extension. Contains CDI beans, configuration, and runtime services.</description>
+
+    <dependencies>
+        <!-- Quarkus Core -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-core</artifactId>
+        </dependency>
+
+        <!-- Quarkus Arc (CDI) -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-arc</artifactId>
+        </dependency>
+
+        <!-- Quarkus REST (RESTEasy Reactive successor) for REST endpoints -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-rest-jackson</artifactId>
+        </dependency>
+
+        <!-- CMS Core (domain entities + services) -->
+        <dependency>
+            <groupId>com.quarkus.cms</groupId>
+            <artifactId>cms-core</artifactId>
+        </dependency>
+
+        <!-- CMS REST API (Strapi-compatible Content API endpoints) -->
+        <dependency>
+            <groupId>com.quarkus.cms</groupId>
+            <artifactId>cms-rest-api</artifactId>
+        </dependency>
+
+        <!-- CMS Draft/Publish (content lifecycle) -->
+        <dependency>
+            <groupId>com.quarkus.cms</groupId>
+            <artifactId>cms-draft-publish</artifactId>
+        </dependency>
+
+        <!-- CMS Webhooks (lifecycle events + webhook dispatch) -->
+        <dependency>
+            <groupId>com.quarkus.cms</groupId>
+            <artifactId>cms-webhooks</artifactId>
+        </dependency>
+
+        <!-- CMS Auth (users, roles, permissions, JWT) -->
+        <dependency>
+            <groupId>com.quarkus.cms</groupId>
+            <artifactId>cms-auth</artifactId>
+        </dependency>
+
+        <!-- CMS Admin API (admin panel backend endpoints) -->
+        <dependency>
+            <groupId>com.quarkus.cms</groupId>
+            <artifactId>cms-admin-api</artifactId>
+        </dependency>
+
+        <!-- CMS Media (uploads, storage providers, image optimization) -->
+        <dependency>
+            <groupId>com.quarkus.cms</groupId>
+            <artifactId>cms-media</artifactId>
+        </dependency>
+
+        <!-- Custom Fields module -->
+        <dependency>
+            <groupId>com.quarkus.cms</groupId>
+            <artifactId>cms-custom-fields</artifactId>
+        </dependency>
+
+        <!-- I18n/Internationalization module -->
+        <dependency>
+            <groupId>com.quarkus.cms</groupId>
+            <artifactId>cms-i18n</artifactId>
+        </dependency>
+
+        <!-- Audit Log module -->
+        <dependency>
+            <groupId>com.quarkus.cms</groupId>
+            <artifactId>cms-audit</artifactId>
+        </dependency>
+
+        <!-- Content Review module -->
+        <dependency>
+            <groupId>com.quarkus.cms</groupId>
+            <artifactId>cms-review</artifactId>
+        </dependency>
+
+        <!-- Plugin System module -->
+        <dependency>
+            <groupId>com.quarkus.cms</groupId>
+            <artifactId>cms-plugin</artifactId>
+        </dependency>
+
+        <!-- Flyway database migrations -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-flyway</artifactId>
+        </dependency>
+
+        <!-- Quarkus Test -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.smallrye</groupId>
+                <artifactId>jandex-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

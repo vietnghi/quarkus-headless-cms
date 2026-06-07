@@ -1,0 +1,93 @@
+{
+  "uid": "api::article.article",
+  "kind": "COLLECTION_TYPE",
+  "singularName": "article",
+  "pluralName": "articles",
+  "displayName": "Article",
+  "description": "Rich blog article with SEO metadata, tags, and related content support",
+  "draftAndPublish": true,
+  "localized": true,
+  "fields": [
+    {
+      "name": "title",
+      "type": "STRING",
+      "required": true,
+      "maxLength": 255,
+      "localized": true
+    },
+    {
+      "name": "slug",
+      "type": "UID",
+      "required": true,
+      "maxLength": 255,
+      "target": "title"
+    },
+    {
+      "name": "subtitle",
+      "type": "STRING",
+      "maxLength": 300,
+      "localized": true
+    },
+    {
+      "name": "excerpt",
+      "type": "TEXT",
+      "maxLength": 500,
+      "localized": true
+    },
+    {
+      "name": "body",
+      "type": "RICHTEXT",
+      "localized": true
+    },
+    {
+      "name": "featured",
+      "type": "BOOLEAN",
+      "defaultValue": "false"
+    },
+    {
+      "name": "coverImage",
+      "type": "MEDIA"
+    },
+    {
+      "name": "readingTime",
+      "type": "INTEGER",
+      "min": 1,
+      "max": 120
+    },
+    {
+      "name": "publishedAt",
+      "type": "DATETIME"
+    },
+    {
+      "name": "seo",
+      "type": "COMPONENT",
+      "component": "shared.seo",
+      "repeatable": false
+    }
+  ],
+  "components": [
+    "shared.seo"
+  ],
+  "relations": [
+    {
+      "fieldName": "author",
+      "type": "MANY_TO_ONE",
+      "target": "api::author.author",
+      "targetAttribute": "articles"
+    },
+    {
+      "fieldName": "categories",
+      "type": "MANY_TO_MANY",
+      "target": "api::category.category",
+      "targetAttribute": "articles",
+      "joinTable": "articles_categories"
+    },
+    {
+      "fieldName": "tags",
+      "type": "MANY_TO_MANY",
+      "target": "api::tag.tag",
+      "targetAttribute": "articles",
+      "joinTable": "articles_tags"
+    }
+  ]
+}

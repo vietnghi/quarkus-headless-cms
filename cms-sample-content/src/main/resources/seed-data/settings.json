@@ -1,0 +1,13 @@
+{
+  "siteName": "Quarkus CMS Demo",
+  "siteDescription": "A demonstration of the Quarkus Headless CMS extension with sample content types, seeded data, and API-driven content management.",
+  "socialLinks": {
+    "github": "https://github.com/quarkus-cms",
+    "twitter": "https://twitter.com/quarkus-cms",
+    "linkedin": "https://linkedin.com/company/quarkus-cms",
+    "youtube": "https://youtube.com/@quarkus-cms"
+  },
+  "contactEmail": "hello@quarkus-cms.dev",
+  "footerText": "Built with Quarkus Headless CMS &copy; 2026. All rights reserved.",
+  "customHeadHtml": "<meta name=\"generator\" content=\"Quarkus Headless CMS\" />"
+}

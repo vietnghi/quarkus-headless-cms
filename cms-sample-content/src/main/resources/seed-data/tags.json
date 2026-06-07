@@ -1,0 +1,52 @@
+[
+  {
+    "name": "quarkus",
+    "slug": "quarkus",
+    "color": "#4695EB"
+  },
+  {
+    "name": "java",
+    "slug": "java",
+    "color": "#ED8B00"
+  },
+  {
+    "name": "headless-cms",
+    "slug": "headless-cms",
+    "color": "#6366f1"
+  },
+  {
+    "name": "tutorial",
+    "slug": "tutorial",
+    "color": "#10b981"
+  },
+  {
+    "name": "design-systems",
+    "slug": "design-systems",
+    "color": "#ec4899"
+  },
+  {
+    "name": "graphql",
+    "slug": "graphql",
+    "color": "#E535AB"
+  },
+  {
+    "name": "rest-api",
+    "slug": "rest-api",
+    "color": "#2563eb"
+  },
+  {
+    "name": "architecture",
+    "slug": "architecture",
+    "color": "#8b5cf6"
+  },
+  {
+    "name": "performance",
+    "slug": "performance",
+    "color": "#f59e0b"
+  },
+  {
+    "name": "ai",
+    "slug": "ai",
+    "color": "#ef4444"
+  }
+]

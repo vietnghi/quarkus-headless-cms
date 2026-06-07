@@ -1,0 +1,69 @@
+{
+  "uid": "api::category.category",
+  "kind": "COLLECTION_TYPE",
+  "singularName": "category",
+  "pluralName": "categories",
+  "displayName": "Category",
+  "description": "Content categorization taxonomy — grouped articles by topic area",
+  "draftAndPublish": false,
+  "localized": true,
+  "fields": [
+    {
+      "name": "name",
+      "type": "STRING",
+      "required": true,
+      "maxLength": 200,
+      "localized": true
+    },
+    {
+      "name": "slug",
+      "type": "UID",
+      "required": true,
+      "maxLength": 255,
+      "target": "name"
+    },
+    {
+      "name": "description",
+      "type": "TEXT",
+      "localized": true
+    },
+    {
+      "name": "color",
+      "type": "STRING",
+      "maxLength": 7,
+      "defaultValue": "#6366f1",
+      "regex": "^#[0-9a-fA-F]{6}$"
+    },
+    {
+      "name": "icon",
+      "type": "STRING",
+      "maxLength": 50
+    },
+    {
+      "name": "sortOrder",
+      "type": "INTEGER",
+      "defaultValue": "0"
+    }
+  ],
+  "relations": [
+    {
+      "fieldName": "articles",
+      "type": "MANY_TO_MANY",
+      "target": "api::article.article",
+      "targetAttribute": "categories",
+      "joinTable": "articles_categories"
+    },
+    {
+      "fieldName": "parentCategory",
+      "type": "MANY_TO_ONE",
+      "target": "api::category.category",
+      "targetAttribute": "subcategories"
+    },
+    {
+      "fieldName": "subcategories",
+      "type": "ONE_TO_MANY",
+      "target": "api::category.category",
+      "targetAttribute": "parentCategory"
+    }
+  ]
+}

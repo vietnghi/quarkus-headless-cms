@@ -1,0 +1,63 @@
+{
+    "uid": "api::article.article",
+    "kind": "COLLECTION_TYPE",
+    "singularName": "article",
+    "pluralName": "articles",
+    "displayName": "Article",
+    "description": "Blog article with rich content and SEO metadata",
+    "draftAndPublish": true,
+    "localized": false,
+    "fields": [
+        {
+            "name": "title",
+            "type": "STRING",
+            "required": true,
+            "maxLength": 255
+        },
+        {
+            "name": "slug",
+            "type": "UID",
+            "required": true,
+            "maxLength": 255
+        },
+        {
+            "name": "excerpt",
+            "type": "TEXT",
+            "maxLength": 500
+        },
+        {
+            "name": "body",
+            "type": "RICHTEXT"
+        },
+        {
+            "name": "featured",
+            "type": "BOOLEAN",
+            "defaultValue": "false"
+        },
+        {
+            "name": "coverImage",
+            "type": "MEDIA"
+        },
+        {
+            "name": "publishedAt",
+            "type": "DATETIME"
+        }
+    ],
+    "components": [
+        "basic.seo"
+    ],
+    "relations": [
+        {
+            "fieldName": "author",
+            "type": "MANY_TO_ONE",
+            "target": "api::author.author",
+            "targetAttribute": "articles"
+        },
+        {
+            "fieldName": "categories",
+            "type": "MANY_TO_MANY",
+            "target": "api::category.category",
+            "targetAttribute": "articles"
+        }
+    ]
+}

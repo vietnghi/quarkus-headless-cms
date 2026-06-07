@@ -1,0 +1,63 @@
+{
+  "uid": "api::homepage.homepage",
+  "kind": "SINGLE_TYPE",
+  "singularName": "homepage",
+  "pluralName": "homepages",
+  "displayName": "Homepage",
+  "description": "Homepage content managed as a single entry with dynamic sections",
+  "draftAndPublish": true,
+  "localized": true,
+  "fields": [
+    {
+      "name": "heroTitle",
+      "type": "STRING",
+      "required": true,
+      "maxLength": 200,
+      "localized": true
+    },
+    {
+      "name": "heroSubtitle",
+      "type": "STRING",
+      "maxLength": 300,
+      "localized": true
+    },
+    {
+      "name": "heroCtaText",
+      "type": "STRING",
+      "maxLength": 50
+    },
+    {
+      "name": "heroCtaUrl",
+      "type": "STRING",
+      "maxLength": 500
+    },
+    {
+      "name": "heroImage",
+      "type": "MEDIA"
+    },
+    {
+      "name": "aboutTitle",
+      "type": "STRING",
+      "maxLength": 200,
+      "localized": true
+    },
+    {
+      "name": "aboutText",
+      "type": "RICHTEXT",
+      "localized": true
+    },
+    {
+      "name": "featuredArticleIds",
+      "type": "JSON"
+    },
+    {
+      "name": "seo",
+      "type": "COMPONENT",
+      "component": "shared.seo",
+      "repeatable": false
+    }
+  ],
+  "components": [
+    "shared.seo"
+  ]
+}

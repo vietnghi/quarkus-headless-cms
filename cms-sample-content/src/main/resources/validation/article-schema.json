@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/article.json",
+  "title": "Article",
+  "description": "Schema for validating Article content entries",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Article title (required, max 255 characters)"
+    },
+    "slug": {
+      "type": "string",
+      "maxLength": 255,
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "description": "URL-friendly slug derived from title"
+    },
+    "subtitle": {
+      "type": "string",
+      "maxLength": 300,
+      "description": "Optional article subtitle"
+    },
+    "excerpt": {
+      "type": "string",
+      "maxLength": 500,
+      "description": "Short summary for listing pages"
+    },
+    "body": {
+      "type": "string",
+      "description": "Full article body in rich text (Markdown/HTML)"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this article is featured/pinned"
+    },
+    "coverImage": {
+      "type": "string",
+      "description": "URL or media reference for the cover image"
+    },
+    "readingTime": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 120,
+      "description": "Estimated reading time in minutes"
+    },
+    "publishedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 publish timestamp"
+    }
+  },
+  "required": ["title", "slug"],
+  "additionalProperties": true
+}

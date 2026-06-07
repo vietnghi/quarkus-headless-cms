@@ -1,0 +1,39 @@
+-- =============================================================================
+-- Sample Content Seed Data (SQL)
+-- =============================================================================
+-- This SQL script provides a raw SQL approach to seeding content.
+-- It works best for PostgreSQL (the target database) but can be adapted.
+--
+-- The CMS primarily uses the Java API and REST API for data operations,
+-- but this SQL is provided for bootstrapping dev/demo databases directly.
+--
+-- Usage:
+--   psql -U postgres -d cms_demo -f seed-data.sql
+-- =============================================================================
+
+-- The CMS uses a JSONB-based dynamic entry model via the Java API.
+-- Direct SQL insertion into cms_entries is NOT recommended for production
+-- because the system manages relations, versioning, and metadata automatically.
+--
+-- For development seeding, use one of these approaches instead:
+--
+-- 1. Start the app with SampleContentSeeder (auto-runs on startup)
+-- 2. Use the REST API import endpoint
+-- 3. Use the scripts/seed.sh helper script
+--
+-- This file outlines the schema structure for reference:
+
+-- Core tables:
+--   cms_entries      - Content entries with JSONB data column
+--   cms_relations    - Relationship adjacency table
+--   core_schema      - Content type/component definitions
+--   cms_audit_log    - Audit trail entries
+--   cms_revisions    - Content version history
+--
+-- See the Java SampleContentSeeder class for the full seeding implementation.
+
+-- Example: verify seeded content
+-- SELECT content_type, status, locale, COUNT(*) as count
+-- FROM cms_entries
+-- GROUP BY content_type, status, locale
+-- ORDER BY content_type;

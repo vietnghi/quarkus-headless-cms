@@ -1,0 +1,82 @@
+[
+  {
+    "title": "Getting Started with Quarkus Headless CMS",
+    "slug": "getting-started-quarkus-headless-cms",
+    "subtitle": "Build a modern content management system on Kubernetes-native Java",
+    "excerpt": "Learn how to build a powerful, extensible headless CMS using Quarkus, Hibernate Panache, and PostgreSQL JSONB.",
+    "body": "## Introduction\n\nQuarkus Headless CMS provides a powerful, extensible platform for managing structured content. Built on Quarkus, it offers fast startup times, low memory footprint, and a rich set of features including draft/publish workflows, content versioning, and schema-driven content types.\n\n## Why Headless CMS?\n\nA headless CMS separates content management from content delivery. This means you can manage content in one place and deliver it anywhere — websites, mobile apps, smart displays, or even voice assistants.\n\n## Key Features\n\n- **Schema-Driven Content Types**: Define your content structure using JSON schemas or the Java builder API\n- **Draft/Publish Workflow**: Create drafts, publish them, and manage version history\n- **Dynamic Relations**: Establish relationships between content types without DDL changes\n- **RESTful and GraphQL APIs**: Access your content through both REST endpoints and GraphQL queries\n- **Plugin System**: Extend functionality through the plugin SPI\n\n## Architecture Overview\n\nThe CMS is built on a **hybrid document-on-RDBMS** model. Standard metadata fields (document ID, content type, locale, status, timestamps) are stored as physical columns in the `cms_entries` table, while custom content-type fields are serialized into a JSONB column. This enables dynamic schemas without requiring DDL changes.\n\n```java\n@Entity\n@Table(name = \"cms_entries\")\npublic class CmsEntry extends PanacheEntityBase {\n    @Id\n    @GeneratedValue(strategy = GenerationType.IDENTITY)\n    public Long id;\n\n    public String documentId;\n    public String contentType;\n\n    @JdbcTypeCode(SqlTypes.JSON)\n    public Map<String, Object> data;  // dynamic fields here\n}\n```\n\n## Getting Started\n\nTo start using the CMS, add the dependency to your project:\n\n```xml\n<dependency>\n    <groupId>com.quarkus.cms</groupId>\n    <artifactId>quarkus-headless-cms</artifactId>\n</dependency>\n```\n\nThen define your content types, seed some data, and start building!",
+    "featured": true,
+    "readingTime": 8,
+    "publishedAt": "2026-01-15T10:00:00Z"
+  },
+  {
+    "title": "Designing Flexible Content Schemas for Modern Websites",
+    "slug": "designing-flexible-content-schemas",
+    "subtitle": "Best practices for schema design that adapts to changing requirements",
+    "excerpt": "A well-designed content schema is the foundation of a successful headless CMS implementation. Here's how to get it right.",
+    "body": "## Why Schema Design Matters\n\nA well-designed content schema is the foundation of a successful headless CMS implementation. It determines how flexible, maintainable, and performant your content management system will be.\n\n## Key Principles\n\n### 1. Start Simple\nBegin with the minimum fields you need and add more as requirements emerge. It's easier to add fields than to restructure existing content.\n\n### 2. Use Components\nBreak reusable field groups into components for consistency. The SEO component is a classic example — define it once, use it everywhere.\n\n### 3. Leverage Relations\nModel real-world relationships between content types. An Article can have an Author, belong to Categories, and be tagged with Tags. Use the appropriate relation cardinality:\n\n- **ONE_TO_MANY**: One author has many articles\n- **MANY_TO_MANY**: Articles can belong to multiple categories and vice versa\n- **MANY_TO_ONE**: An article has one author\n\n### 4. Plan for Localization\nIf your content needs to reach a global audience, design for localization from day one. Mark fields as `localized: true` for per-locale translations. The CMS stores translations as separate rows linked by a shared `documentId`.\n\n### 5. Use JSON for Complex Structures\nFor truly dynamic data like social links, metadata, or configuration, use the JSON field type. It gives you maximum flexibility without requiring schema changes.",
+    "featured": true,
+    "readingTime": 12,
+    "publishedAt": "2026-02-03T14:30:00Z"
+  },
+  {
+    "title": "Building Scalable APIs with Quarkus: A Practical Guide",
+    "slug": "building-scalable-apis-quarkus",
+    "subtitle": "High-performance REST and GraphQL APIs with Kubernetes-native Java",
+    "excerpt": "Learn how to build high-performance, scalable APIs using Quarkus — the Kubernetes-native Java framework.",
+    "body": "## Why Quarkus for APIs?\n\nQuarkus is a Kubernetes-native Java framework tailored for GraalVM and HotSpot. It offers blazing fast startup times (under 0.1s) and low RSS memory, making it ideal for microservices and serverless architectures.\n\n## Key Performance Features\n\n- **Fast Boot Time**: Sub-second startup makes it perfect for containerized environments\n- **Low Memory Footprint**: Typically 1/10th of traditional Java frameworks\n- **Native Compilation**: Compile to a native binary with GraalVM for even faster startup\n- **Reactive Core**: Built on Vert.x for non-blocking I/O\n\n## REST API Example\n\n```java\n@Path(\"/articles\")\n@Produces(MediaType.APPLICATION_JSON)\npublic class ArticleResource {\n\n    @Inject\n    ContentManagerService contentManager;\n\n    @GET\n    public Response listArticles(@QueryParam(\"page\") @DefaultValue(\"0\") int page) {\n        List<CmsEntry> entries = contentManager.listEntries(\n            \"api::article.article\", null, \"en\", page, 20);\n        return Response.ok(entries).build();\n    }\n}\n```\n\n## GraphQL Support\n\nThe CMS also includes a full GraphQL API with auto-generated schemas, making it easy to query exactly the data you need.",
+    "featured": true,
+    "readingTime": 15,
+    "publishedAt": "2026-03-10T09:00:00Z"
+  },
+  {
+    "title": "Understanding Draft/Publish Workflows in Content Management",
+    "slug": "understanding-draft-publish-workflows",
+    "subtitle": "Versioning, publishing, and content lifecycle management explained",
+    "excerpt": "Explore how draft/publish workflows enable content teams to collaborate effectively with versioning and controlled publishing.",
+    "body": "## The Content Lifecycle\n\nContent doesn't go from creation to publication in one step. It goes through a lifecycle — drafted, reviewed, published, and sometimes archived or updated. The CMS's draft/publish system handles this lifecycle with precision.\n\n## Draft State\n\nWhen content is first created, it's in a **draft** state. Drafts are visible only to content editors and administrators. Multiple drafts can be created, but only one draft can exist per document version.\n\n## Published State\n\nWhen a draft is published, it becomes visible via the public API. The CMS maintains both the draft and published versions simultaneously, allowing editors to update content for future publication while the current version remains live.\n\n## Version History\n\nEvery publish creates a new version. The CMS keeps a complete version history, allowing you to:\n\n- View what was published and when\n- Roll back to a previous version if needed\n- Track who published each version\n\n## The API\n\n```java\n// Create a draft\nCmsEntry draft = draftPublishService.createDraft(\n    \"api::article.article\", data, \"en\", userId);\n\n// Publish it\nCmsEntry published = draftPublishService.publish(\n    draft.documentId, \"en\", userId);\n\n// Unpublish (removes published copy, keeps draft)\ndraftPublishService.unpublish(documentId, \"en\");\n```",
+    "featured": false,
+    "readingTime": 6,
+    "publishedAt": "2026-03-22T11:00:00Z"
+  },
+  {
+    "title": "The Future of Quantum Computing in Content Management",
+    "slug": "future-quantum-computing-cms",
+    "subtitle": "How quantum algorithms could transform content delivery and personalization",
+    "excerpt": "Exploring the potential impact of quantum computing on content management systems and personalized content delivery.",
+    "body": "## A Bold New Frontier\n\nQuantum computing promises to revolutionize many fields, and content management is no exception. With the ability to process vast amounts of data in parallel, quantum algorithms could enable unprecedented levels of content personalization and recommendation.\n\n## Potential Applications\n\n### 1. Hyper-Personalized Content\n\nQuantum machine learning algorithms could analyze user behavior patterns across millions of dimensions simultaneously, delivering content experiences tailored to individual preferences in real-time.\n\n### 2. Optimal Content Assembly\n\nQuantum optimization algorithms could determine the optimal arrangement of content components for each user, maximizing engagement based on hundreds of variables.\n\n### 3. Natural Language Understanding\n\nQuantum NLP models could process context and nuance beyond the capabilities of classical models, enabling more sophisticated content analysis and generation.\n\n## Current Limitations\n\nWhile the potential is enormous, practical quantum computing for content management is still years away. Current quantum computers have limited qubit counts and high error rates. However, research is progressing rapidly, and the first practical applications may emerge within the next decade.",
+    "featured": false,
+    "readingTime": 7,
+    "publishedAt": null
+  },
+  {
+    "title": "Content Localization Strategies for Global Audiences",
+    "slug": "content-localization-strategies-global-audiences",
+    "subtitle": "Reach readers worldwide with effective i18n and l10n approaches",
+    "excerpt": "Strategies and best practices for managing multi-language content in a headless CMS.",
+    "body": "## Why Localization Matters\n\nIn today's connected world, reaching a global audience requires more than just translation. True localization adapts your content to cultural contexts, regional preferences, and local regulations.\n\n## The CMS Localization Model\n\nThe CMS supports locale per entry through the `locale` column on every content entry. Localized content types can have entries in multiple locales, all linked by a shared `documentId`.\n\n### Key Concepts\n\n- **Locale**: A language/region identifier like `en`, `fr`, `de-DE`, `ja-JP`\n- **Document ID**: A UUID shared across all locale versions of the same piece of content\n- **Localizable Fields**: Fields marked `localized: true` in the schema can have different values per locale\n- **Non-Localizable Fields**: Fields like `slug` or timestamps are shared across all locales\n\n## Implementation\n\n```java\n// Create an English entry\nCmsEntry en = contentManager.createEntry(\n    \"api::article.article\", data, \"en\", userId);\n\n// Create a French translation (same documentId)\nCmsEntry fr = contentManager.createLocalization(\n    en.documentId, \"fr\", frenchData, userId);\n```\n\n## Best Practices\n\n1. **Start with locale-ready schemas** — mark text fields as localizable from the start\n2. **Use a localization management platform** for translation workflows\n3. **Test with real users** in each target locale",
+    "featured": false,
+    "readingTime": 10,
+    "publishedAt": "2026-04-05T08:00:00Z"
+  },
+  {
+    "title": "GraphQL vs REST: Choosing the Right API for Your CMS",
+    "slug": "graphql-vs-rest-cms-api",
+    "subtitle": "Comparing two API paradigms for content delivery and management",
+    "excerpt": "A practical comparison of GraphQL and REST APIs for headless CMS, with examples and recommendations.",
+    "body": "## The API Debate\n\nWhen building a headless CMS, one of the first architectural decisions is choosing your API paradigm. Both REST and GraphQL have passionate advocates, and each has strengths for different use cases.\n\n## REST API\n\n**Strengths:**\n\n- Simple, intuitive URL structure\n- Easy caching at the HTTP level\n- Widely understood and documented\n- Great for CRUD operations\n\n```bash\nGET /api/articles?populate=author,categories\nPOST /api/articles\nPUT /api/articles/:id\n```\n\n## GraphQL API\n\n**Strengths:**\n\n- Request exactly the data you need\n- Single endpoint for all operations\n- Strongly typed schema with introspection\n- Nested resource fetching in one request\n\n```graphql\nquery {\n  entries(contentType: \"article\", locale: \"en\") {\n    title\n    author { name }\n    categories { name }\n  }\n}\n```\n\n## Our Recommendation\n\nThe CMS supports both REST and GraphQL APIs, so you don't have to choose. Use REST for simple CRUD and admin operations, and GraphQL for complex frontend queries that need nested data.",
+    "featured": true,
+    "readingTime": 9,
+    "publishedAt": "2026-04-20T16:00:00Z"
+  },
+  {
+    "title": "Setting Up CI/CD for Your Headless CMS Project",
+    "slug": "cicd-headless-cms-project",
+    "subtitle": "Automate testing and deployment of your content infrastructure",
+    "excerpt": "Learn how to set up continuous integration and delivery for a Quarkus-based headless CMS project.",
+    "body": "## Why CI/CD Matters\n\nAutomated testing and deployment is essential for maintaining a healthy CMS project. It catches regressions early, ensures consistent deployments, and gives your team confidence to ship changes frequently.\n\n## Test Structure\n\nThe CMS project uses a multi-layered testing strategy:\n\n1. **Unit Tests**: Test individual components and services in isolation\n2. **Integration Tests**: Test the full Quarkus application with H2 in-memory database\n3. **Contract Tests**: Verify API contracts with REST Assured\n\n## Running Tests\n\n```bash\n# Run unit tests (skip JaCoCo coverage check)\nmvn test -Pdev\n\n# Run integration tests\nmvn verify -Pdev -pl integration-tests\n\n# Run specific module tests\nmvn test -Pdev -pl cms-core,cms-graphql\n```\n\n## Deployment Pipeline\n\nA typical deployment pipeline for the CMS involves:\n\n1. **Build**: Compile and package the application\n2. **Test**: Run unit and integration tests\n3. **Containerize**: Build a Docker image\n4. **Push**: Push to container registry\n5. **Deploy**: Deploy to Kubernetes or target environment\n6. **Smoke Test**: Verify the deployment is healthy",
+    "featured": false,
+    "readingTime": 8,
+    "publishedAt": "2026-05-01T12:00:00Z"
+  }
+]
