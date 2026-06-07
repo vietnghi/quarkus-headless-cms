@@ -22,10 +22,11 @@
             <artifactId>quarkus-hibernate-orm-panache</artifactId>
         </dependency>
 
-        <!-- PostgreSQL JDBC driver -->
+        <!-- PostgreSQL JDBC driver (test scope — apps declare their own driver) -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-jdbc-postgresql</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <!-- Jackson JSON processing -->
