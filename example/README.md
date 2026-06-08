@@ -101,7 +101,7 @@ example/src/main/
 │   ├── DemoDataSeeder.java    # Startup data seeder
 │   └── ExampleResource.java   # Legacy health endpoint
 ├── resources/
-│   ├── application.properties # App configuration (H2 in-memory DB)
+│   ├── application.properties # App configuration (SQLite/PostgreSQL DB)
 │   └── schemas/              # Content-type JSON schema definitions
 │       ├── articles.json      # api::article.article
 │       ├── authors.json       # api::author.author

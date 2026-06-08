@@ -69,18 +69,18 @@ quarkus.flyway.baseline-on-migrate=true
 
 ### Development
 
-In dev mode, use H2 with Hibernate's `drop-and-create` for rapid iteration:
+In dev mode, use SQLite with Hibernate's `drop-and-create` for rapid iteration:
 
 ```properties
-quarkus.datasource.db-kind=h2
-quarkus.datasource.jdbc.url=jdbc:h2:mem:cms;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
+quarkus.datasource.db-kind=sqlite
+quarkus.datasource.jdbc.url=jdbc:sqlite:mem:dev
 quarkus.hibernate-orm.database.generation=drop-and-create
 quarkus.flyway.migrate-at-start=false
 ```
 
 ### Testing
 
-Integration tests also use H2 with `drop-and-create` and Flyway disabled:
+Integration tests use SQLite with `drop-and-create` and Flyway disabled:
 
 ```properties
 quarkus.flyway.migrate-at-start=false

@@ -2,16 +2,17 @@ package com.quarkus.cms.i18n;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.quarkus.cms.i18n.dto.LocaleDto;
-import com.quarkus.cms.i18n.model.CmsLocale;
-import com.quarkus.cms.i18n.service.LocaleService;
+import com.quarkus.cms.core.domain.CmsEntry;
+import com.quarkus.cms.core.repository.CmsEntryRepository;
 
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 
 import java.util.List;
+import java.util.Map;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
@@ -19,49 +20,37 @@ import org.junit.jupiter.api.Test;
 class DebugLocaleTest {
 
   @Inject
-  LocaleService localeService;
+  CmsEntryRepository entryRepository;
+
+  @BeforeEach
+  void cleanUp() {
+    CmsEntry.deleteAll();
+  }
 
   @Test
-  void shouldDebugLocalePersistence() {
-    // Create a locale explicitly as default
-    LocaleDto created = localeService.createLocale(new LocaleDto("en", "English", true, true));
-    System.out.println("=== Created: code=" + created.code + " isDefault=" + created.isDefault);
+  void debugCreateAndFind() {
+    // Create an entry
+    CmsEntry enEntry = entryRepository.create("api::article.article",
+        Map.of("title", "Hello World", "content", "Great article"), "en");
+    assertNotNull(enEntry);
+    assertNotNull(enEntry.documentId);
+    System.err.println("DEBUG: Created entry with id=" + enEntry.id + " docId=" + enEntry.documentId + " status=" + enEntry.status);
 
-    // Count locales
-    long count = CmsLocale.count();
-    System.out.println("=== Locale count: " + count);
+    // Try to find it directly
+    CmsEntry found = CmsEntry.findByDocumentId(enEntry.documentId, "draft", "en");
+    System.err.println("DEBUG: findByDocumentId(draft) = " + (found == null ? "null" : "found id=" + found.id));
 
-    // Try findByCode
-    CmsLocale byCode = CmsLocale.findByCode("en");
-    System.out.println("=== findByCode(en): " + (byCode != null ? "found code=" + byCode.code + " isDefault=" + byCode.isDefault : "null"));
+    // Try to find by document ID only
+    CmsEntry byDoc = (CmsEntry) CmsEntry.find("documentId", enEntry.documentId).firstResult();
+    System.err.println("DEBUG: find by documentId = " + (byDoc == null ? "null" : "found id=" + byDoc.id + " status=" + byDoc.status));
 
-    // Try findDefault
-    CmsLocale def = CmsLocale.findDefault();
-    System.out.println("=== findDefault(): " + (def != null ? def.code : "null"));
-
-    // Try find with native query
-    CmsLocale hqlResult = (CmsLocale) CmsLocale.find("isDefault = ?1", true).firstResult();
-    System.out.println("=== HQL isDefault=true: " + (hqlResult != null ? hqlResult.code : "null"));
-
-    // Trying with list
-    List<CmsLocale> allDefaults = CmsLocale.list("isDefault", true);
-    System.out.println("=== list(isDefault, true): " + allDefaults.size() + " entries");
-
-    // Try using 'where' clause
-    CmsLocale whereResult = (CmsLocale) CmsLocale.find("FROM CmsLocale WHERE isDefault = ?1", true).firstResult();
-    System.out.println("=== WHERE isDefault: " + (whereResult != null ? whereResult.code : "null"));
-
-    // List all locales
-    List<CmsLocale> all = CmsLocale.listAll();
-    for (CmsLocale loc : all) {
-      System.out.println("=== All: code=" + loc.code + " isDefault=" + loc.isDefault + " enabled=" + loc.enabled);
+    // List all entries
+    List<CmsEntry> all = CmsEntry.listAll();
+    System.err.println("DEBUG: total entries = " + all.size());
+    for (CmsEntry e : all) {
+      System.err.println("  entry id=" + e.id + " docId=" + e.documentId + " status=" + e.status + " locale=" + e.locale);
     }
 
-    // Verify via service
-    assertEquals("en", localeService.getDefaultLocale(), "getDefaultLocale should return 'en'");
-    assertEquals("en", CmsLocale.defaultCode(), "defaultCode should return 'en'");
-
-    assertNotNull(byCode, "By code should find the locale");
-    assertNotNull(def, "findDefault should find the locale");
+    assertNotNull(found, "Should find the entry by documentId+draft+locale");
   }
 }
