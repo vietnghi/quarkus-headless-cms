@@ -54,13 +54,17 @@
             <artifactId>quarkus-hibernate-orm-panache</artifactId>
         </dependency>
 
-        <!-- H2 JDBC driver for local development -->
+        <!-- SQLite JDBC driver for local development -->
         <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-jdbc-h2</artifactId>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-community-dialects</artifactId>
         </dependency>
 
-        <!-- PostgreSQL JDBC driver (for JSONB column support even in H2 dev mode) -->
+        <!-- PostgreSQL JDBC driver -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-jdbc-postgresql</artifactId>

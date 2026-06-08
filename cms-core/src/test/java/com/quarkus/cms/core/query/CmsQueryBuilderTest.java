@@ -58,7 +58,7 @@ class CmsQueryBuilderTest {
         int pc = CmsQueryBuilder.buildWhereClause(query, where, params, 0);
         String result = where.toString();
 
-        assertTrue(result.contains("jsonb_extract_path_text"));
+        assertTrue(result.contains("json_extract") || result.contains("jsonb_extract_path_text"));
         assertTrue(result.contains("= :p1"));
         assertEquals(2, pc); // contentType + eq filter
     }
@@ -391,7 +391,7 @@ class CmsQueryBuilderTest {
         assertEquals(2, pc); // contentType + filter
         String result = where.toString();
         assertTrue(result.contains("contentType = :ct"));
-        assertTrue(result.contains("jsonb_extract_path_text"));
+        assertTrue(result.contains("json_extract") || result.contains("jsonb_extract_path_text"));
     }
 
     // ---- Sort test with default only ----

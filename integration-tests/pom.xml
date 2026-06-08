@@ -114,18 +114,15 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- H2 deployment for in-memory test database -->
+        <!-- SQLite for testing -->
         <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-jdbc-h2-deployment</artifactId>
-            <version>${quarkus.platform.version}</version>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <!-- Test -->
         <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-jdbc-h2</artifactId>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-community-dialects</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
