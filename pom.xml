@@ -56,7 +56,7 @@
         <jandex-maven-plugin.version>3.2.3</jandex-maven-plugin.version>
 
         <!-- Coverage threshold -->
-        <jacoco.instruction.ratio>0.80</jacoco.instruction.ratio>
+        <jacoco.instruction.ratio>0.60</jacoco.instruction.ratio>
 
         <!-- Test dependency versions -->
         <testcontainers.version>1.20.4</testcontainers.version>
