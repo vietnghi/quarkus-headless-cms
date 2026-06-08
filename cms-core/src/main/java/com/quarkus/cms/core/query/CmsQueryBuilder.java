@@ -78,7 +78,9 @@ public final class CmsQueryBuilder {
         hql.append(field);
       } else {
         // JSONB data field — extract via function for dynamic sort
-        hql.append(JsonbFunctions.extractPathText(field));
+        hql.append("FUNCTION('jsonb_extract_path_text', data, '")
+            .append(field.replace("'", "''"))
+            .append("')");
       }
       hql.append(dir == Sort.Direction.Ascending ? " ASC" : " DESC");
     }
@@ -154,7 +156,7 @@ public final class CmsQueryBuilder {
   private static int appendLeafClause(
       FilterNode.Leaf leaf, StringBuilder where, Parameters params, int pc) {
     String paramName = "p" + pc;
-    String jsonPath = JsonbFunctions.extractPathText(leaf.getField());
+    String jsonPath = "FUNCTION('jsonb_extract_path_text', data, '" + leaf.getField() + "')";
 
     if (!where.isEmpty()) {
       where.append(" AND ");

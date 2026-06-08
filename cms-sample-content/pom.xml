@@ -44,6 +44,12 @@
             <artifactId>quarkus-hibernate-orm-panache</artifactId>
         </dependency>
 
+        <!-- H2 JDBC driver for local development -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jdbc-h2</artifactId>
+        </dependency>
+
         <!-- PostgreSQL JDBC driver -->
         <dependency>
             <groupId>io.quarkus</groupId>

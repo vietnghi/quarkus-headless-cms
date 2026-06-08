@@ -48,6 +48,3 @@ output/
 
 # Maven wrapper (keep the jar, ignore original)
 .mvn/wrapper/maven-wrapper.jar.original
-
-# SQLite test databases
-**/mem:test*

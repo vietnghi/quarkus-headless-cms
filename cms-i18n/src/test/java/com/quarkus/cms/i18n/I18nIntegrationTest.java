@@ -22,10 +22,9 @@ import org.junit.jupiter.api.Test;
 /**
  * Integration test for the i18n module.
  *
- * <p>Tests the full LocaleService and I18nService with a real SQLite database.
+ * <p>Tests the full LocaleService and I18nService with a real H2 database.
  */
 @QuarkusTest
-@Transactional
 class I18nIntegrationTest {
 
   @Inject

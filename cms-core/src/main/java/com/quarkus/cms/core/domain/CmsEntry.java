@@ -66,8 +66,7 @@ public class CmsEntry extends PanacheEntityBase {
   @Column(name = "published_by_id")
   public Long publishedById;
 
-  @Convert(converter = com.quarkus.cms.core.domain.JsonMapConverter.class)
-  @JdbcTypeCode(SqlTypes.LONG32VARCHAR)
+  @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "data")
   public Map<String, Object> data = new HashMap<>();
 
