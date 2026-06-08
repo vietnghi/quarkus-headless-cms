@@ -8,6 +8,8 @@ import com.quarkus.cms.core.schema.storage.SchemaStorageService;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 
 import java.util.*;
@@ -29,6 +31,9 @@ public class I18nService {
   @Inject
   LocaleService localeService;
 
+  @PersistenceContext
+  EntityManager entityManager;
+
   // ---- Localization CRUD ----
 
   /**
@@ -49,6 +54,7 @@ public class I18nService {
     // For each locale, return the most relevant version (published > draft > unpublished)
     Map<String, CmsEntry> bestPerLocale = new LinkedHashMap<>();
     for (CmsEntry entry : allEntries) {
+      if (entry == null) continue;
       String locale = entry.locale;
       CmsEntry existing = bestPerLocale.get(locale);
       if (existing == null || shouldReplace(existing, entry)) {
@@ -322,6 +328,8 @@ public class I18nService {
 
   /** Finds the best entry for a document in a specific locale (any status). */
   private CmsEntry findBestEntry(String documentId, String locale) {
+    // Force flush to ensure recently persisted entities are visible
+    entityManager.flush();
     CmsEntry published = CmsEntry.findByDocumentId(documentId, "published", locale);
     if (published != null) return published;
     CmsEntry draft = CmsEntry.findByDocumentId(documentId, "draft", locale);
