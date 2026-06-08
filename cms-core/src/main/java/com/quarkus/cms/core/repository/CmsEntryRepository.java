@@ -34,6 +34,7 @@ public class CmsEntryRepository {
     entry.status = "draft";
     entry.data = data;
     entry.persist();
+    CmsEntry.flush();
     Log.debugf(
         "Created entry: %s (type=%s, locale=%s)", entry.documentId, contentType, entry.locale);
     return entry;
