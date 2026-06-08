@@ -14,6 +14,7 @@ concurrency:
 env:
   MAVEN_OPTS: -Xmx3g -XX:+UseG1GC
   LANG: en_US.UTF-8
+  QUARKUS_DEV_SERVICES_ENABLED: false
 
 jobs:
   unit-tests:

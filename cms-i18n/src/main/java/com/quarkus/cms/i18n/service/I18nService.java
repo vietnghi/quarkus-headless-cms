@@ -104,6 +104,9 @@ public class I18nService {
       String documentId, String sourceLocale, String targetLocale,
       Map<String, Object> localizedData, Long userId) {
 
+    // Flush to ensure recently persisted entities are visible
+    entityManager.flush();
+
     // Find the source entry to copy non-localized fields from
     CmsEntry source = findBestEntry(documentId, sourceLocale);
     if (source == null) {
