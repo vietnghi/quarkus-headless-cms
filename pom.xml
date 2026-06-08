@@ -203,6 +203,21 @@
                 <version>${project.version}</version>
             </dependency>
 
+            <!-- SQLite JDBC driver for lightweight test profiles -->
+            <dependency>
+                <groupId>org.xerial</groupId>
+                <artifactId>sqlite-jdbc</artifactId>
+                <version>3.49.1.0</version>
+                <scope>test</scope>
+            </dependency>
+            <!-- Hibernate community dialects (SQLite dialect support) -->
+            <dependency>
+                <groupId>org.hibernate.orm</groupId>
+                <artifactId>hibernate-community-dialects</artifactId>
+                <version>7.3.6.Final</version>
+                <scope>test</scope>
+            </dependency>
+
             <!-- Test dependency versions -->
             <dependency>
                 <groupId>org.assertj</groupId>
@@ -213,6 +228,15 @@
         </dependencies>
     </dependencyManagement>
 
+    <!--
+        ── SQLite Test Infrastructure ──────────────────────────────────
+        The project uses SQLite via raw sqlite-jdbc + hibernate-community-dialects
+        for unit tests. The Quarkus platform BOM does NOT include
+        quarkus-jdbc-sqlite as of 3.36.1, so the manual approach is correct.
+        Each module inherits the managed version from dependencyManagement.
+        See SQLITE-INFRASTRUCTURE.md for the shared test config template.
+        ────────────────────────────────────────────────────────────────
+    -->
     <build>
         <pluginManagement>
             <plugins>
