@@ -8,8 +8,6 @@ import com.quarkus.cms.core.query.CmsQueryBuilder;
 import io.quarkus.logging.Log;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 
 import java.time.Instant;
@@ -26,9 +24,6 @@ import java.util.UUID;
 @ApplicationScoped
 public class CmsEntryRepository {
 
-  @PersistenceContext
-  EntityManager entityManager;
-
   /** Creates a new content entry with a generated document ID. */
   @Transactional
   public CmsEntry create(String contentType, Map<String, Object> data, String locale) {
@@ -39,7 +34,6 @@ public class CmsEntryRepository {
     entry.status = "draft";
     entry.data = data;
     entry.persist();
-    entityManager.flush();
     Log.debugf(
         "Created entry: %s (type=%s, locale=%s)", entry.documentId, contentType, entry.locale);
     return entry;
