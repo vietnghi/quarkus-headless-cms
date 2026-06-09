@@ -10,6 +10,7 @@ import com.quarkus.cms.i18n.service.I18nService;
 import com.quarkus.cms.i18n.service.LocaleService;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
@@ -27,6 +28,7 @@ import org.junit.jupiter.api.Test;
  * transaction, so data persisted by one call is visible to the next.
  */
 @QuarkusTest
+@TestProfile(I18nH2Profile.class)
 class I18nIntegrationTest {
 
   @Inject

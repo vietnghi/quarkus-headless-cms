@@ -43,7 +43,13 @@
             <artifactId>rest-assured</artifactId>
             <scope>test</scope>
         </dependency>
-                <!-- SQLite for testing -->
+        <!-- H2 for i18n integration test profile (I18nH2Profile) -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jdbc-h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- SQLite for other tests -->
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
