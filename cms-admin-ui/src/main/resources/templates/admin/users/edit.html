@@ -1,0 +1,279 @@
+{#include admin/base title=title}
+{#body}
+<div class="max-w-4xl mx-auto space-y-6">
+    <!-- Back Link -->
+    <a href="/admin/users-ui"
+       class="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-cms-600 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Back to Users
+    </a>
+
+    <!-- Header -->
+    <div class="flex items-center justify-between bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">{title}</h1>
+            {#if user}
+            <p class="text-sm text-gray-500 mt-1">
+                @{user.username} &middot; {user.email}
+            </p>
+            {/if}
+        </div>
+        {#if user}
+        <div class="flex items-center gap-2">
+            {#if !user.isBlocked}
+            <form method="POST" action="/admin/users-ui/{user.id}/block" class="inline">
+                <button type="submit" onclick="return confirm('Block this user from logging in?')"
+                        class="px-4 py-2 border border-orange-200 text-orange-600 rounded-lg hover:bg-orange-50 text-sm font-medium transition-colors">
+                    Block
+                </button>
+            </form>
+            {#else}
+            <form method="POST" action="/admin/users-ui/{user.id}/unblock" class="inline">
+                <button type="submit"
+                        class="px-4 py-2 border border-green-200 text-green-600 rounded-lg hover:bg-green-50 text-sm font-medium transition-colors">
+                    Unblock
+                </button>
+            </form>
+            {/if}
+        </div>
+        {/if}
+    </div>
+
+    <!-- Error / Flash Messages -->
+    {#if errorMessage?? && errorMessage != null}
+    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+        {errorMessage}
+    </div>
+    {/if}
+    {#if flashMessage?? && flashMessage != null}
+    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        {flashMessage}
+    </div>
+    {/if}
+
+    <!-- Main Form -->
+    <form method="POST" action="{isNew ? '/admin/users-ui/create' : '/admin/users-ui/' + user.id + '/update'}"
+          class="space-y-6">
+
+        <!-- Profile Information -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                <h2 class="text-lg font-semibold text-gray-900">Profile Information</h2>
+                <p class="text-xs text-gray-400 mt-0.5">Basic information about the user</p>
+            </div>
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="space-y-1.5">
+                    <label for="firstName" class="block text-sm font-medium text-gray-700">First Name</label>
+                    <input type="text" id="firstName" name="firstName"
+                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cms-500 focus:border-transparent"
+                           placeholder="First name"
+                           value="{user ? user.firstName : ''}">
+                </div>
+                <div class="space-y-1.5">
+                    <label for="lastName" class="block text-sm font-medium text-gray-700">Last Name</label>
+                    <input type="text" id="lastName" name="lastName"
+                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cms-500 focus:border-transparent"
+                           placeholder="Last name"
+                           value="{user ? user.lastName : ''}">
+                </div>
+                {#if isNew}
+                <div class="space-y-1.5">
+                    <label for="username" class="block text-sm font-medium text-gray-700">Username <span class="text-red-500">*</span></label>
+                    <input type="text" id="username" name="username" required
+                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cms-500 focus:border-transparent"
+                           placeholder="johndoe">
+                </div>
+                {/if}
+                <div class="space-y-1.5">
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email {#if isNew}<span class="text-red-500">*</span>{/if}</label>
+                    <input type="email" id="email" name="email" {#if isNew}required{/if}
+                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cms-500 focus:border-transparent"
+                           placeholder="john@example.com"
+                           value="{user ? user.email : ''}">
+                </div>
+                {#if isNew}
+                <div class="space-y-1.5">
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password <span class="text-red-500">*</span></label>
+                    <input type="password" id="password" name="password" required minlength="8"
+                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cms-500 focus:border-transparent"
+                           placeholder="Minimum 8 characters">
+                </div>
+                {/if}
+            </div>
+        </div>
+
+        <!-- Password Reset (edit mode only) -->
+        {#if !isNew}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+             x-data="{ showPasswordForm: false }">
+            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                <h2 class="text-lg font-semibold text-gray-900">Password</h2>
+                <button type="button" @click="showPasswordForm = !showPasswordForm"
+                        class="text-sm text-cms-600 hover:text-cms-700 font-medium mt-1">
+                    <span x-show="!showPasswordForm">Change password...</span>
+                    <span x-show="showPasswordForm" style="display: none">Cancel</span>
+                </button>
+            </div>
+            <div class="p-6" x-show="showPasswordForm" style="display: none">
+                <div class="space-y-1.5 max-w-md">
+                    <label for="newPassword" class="block text-sm font-medium text-gray-700">New Password</label>
+                    <input type="password" id="newPassword" name="newPassword" minlength="8"
+                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cms-500 focus:border-transparent"
+                           placeholder="Minimum 8 characters">
+                    <p class="text-xs text-gray-400 mt-1">Leave blank to keep current password.</p>
+                </div>
+            </div>
+        </div>
+        {/if}
+
+        <!-- Role Assignment -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                <h2 class="text-lg font-semibold text-gray-900">Role Assignment</h2>
+                <p class="text-xs text-gray-400 mt-0.5">Select the roles assigned to this user</p>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {#for role in roles}
+                    <label class="flex items-start gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                        <input type="checkbox" name="roleIds" value="{role.id}"
+                               class="mt-0.5 rounded border-gray-300 text-cms-600 focus:ring-cms-500"
+                               {#if selectedRoleIds.contains(role.id)}checked{/if}>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">{role.name}</p>
+                            <p class="text-xs text-gray-400">{role.description ?: ''}</p>
+                        </div>
+                    </label>
+                    {/for}
+                </div>
+                {#if roles.isEmpty()}
+                <p class="text-sm text-gray-400 text-center py-4">No roles available. Create roles first.</p>
+                {/if}
+            </div>
+        </div>
+
+        <!-- User Details (edit mode) -->
+        {#if user}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                <h2 class="text-lg font-semibold text-gray-900">Account Details</h2>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase tracking-wider">Status</p>
+                        <p class="text-sm text-gray-900 mt-1">
+                            {#if !user.isActive}
+                            <span class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">Inactive</span>
+                            {#else if user.isBlocked}
+                            <span class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-red-50 text-red-700">Blocked</span>
+                            {#else}
+                            <span class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-green-50 text-green-700">Active</span>
+                            {/if}
+                        </p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase tracking-wider">Preferred Locale</p>
+                        <p class="text-sm text-gray-900 mt-1">{user.preferredLocale ?: 'en'}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase tracking-wider">Created</p>
+                        <p class="text-sm text-gray-900 mt-1">{user.createdAt ? user.createdAt.toString().substring(0, 10) : '-'}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase tracking-wider">Last Login</p>
+                        <p class="text-sm text-gray-900 mt-1">{user.lastLoginAt ? user.lastLoginAt.toString().substring(0, 16).replace('T', ' ') : 'Never'}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase tracking-wider">Updated</p>
+                        <p class="text-sm text-gray-900 mt-1">{user.updatedAt ? user.updatedAt.toString().substring(0, 10) : '-'}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {/if}
+
+        <!-- Content Type Access (edit mode) -->
+        {#if user && contentTypes && !contentTypes.isEmpty()}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-900">Content Type Permissions</h2>
+                    <p class="text-xs text-gray-400 mt-0.5">Permissions derived from assigned roles</p>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-100">
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Content Type</th>
+                            <th class="px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Create</th>
+                            <th class="px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Read</th>
+                            <th class="px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Update</th>
+                            <th class="px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        {#for ct in contentTypes}
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-3">
+                                <p class="text-sm font-medium text-gray-900">{ct.displayName ?: ct.uid}</p>
+                                <p class="text-xs text-gray-400">{ct.uid}</p>
+                            </td>
+                            {#for action in ['create', 'read', 'update', 'delete']}
+                            <td class="px-6 py-3 text-center">
+                                {#if userPermissions.contains('api::' + ct.uid + '.' + action)}
+                                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-100 text-green-600">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                </span>
+                                {#else}
+                                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 text-gray-300">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </span>
+                                {/if}
+                            </td>
+                            {/for}
+                        </tr>
+                        {/for}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {/if}
+
+        <!-- Form Footer -->
+        <div class="flex items-center justify-between bg-white rounded-xl shadow-sm border border-gray-100 px-6 py-4">
+            <a href="/admin/users-ui"
+               class="text-sm text-gray-500 hover:text-gray-700 transition-colors">
+                Cancel
+            </a>
+            <div class="flex items-center gap-3">
+                {#if !isNew && user}
+                <form method="POST" action="/admin/users-ui/{user.id}/delete" class="inline"
+                      onsubmit="return confirm('Deactivate this user? The user will no longer be able to log in.')">
+                    <button type="submit"
+                            class="px-4 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 text-sm font-medium transition-colors">
+                        Deactivate
+                    </button>
+                </form>
+                {/if}
+                <button type="submit"
+                        class="px-6 py-2 bg-cms-600 text-white rounded-lg hover:bg-cms-700 text-sm font-medium transition-colors">
+                    {isNew ? 'Create User' : 'Save Changes'}
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Alpine.js for password form toggle -->
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('passwordToggle', () => ({
+            showPasswordForm: false
+        }));
+    });
+</script>
+{/body}
+{/include}

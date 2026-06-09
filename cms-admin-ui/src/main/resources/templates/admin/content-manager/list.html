@@ -61,6 +61,7 @@
                     <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">ID</th>
                     <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Title / Data</th>
                     <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Stage</th>
                     <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Locale</th>
                     <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Updated</th>
                     <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
@@ -98,6 +99,14 @@
                             <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> {entry.status}
                         </span>
                         {/if}
+                    </td>
+                    <td class="px-6 py-4">
+                        <span id="stage-badge-{entry.documentId}"
+                              hx-get="/admin/review-workflows/content-entry/{entry.documentId}/stage-badge?locale={entry.locale}"
+                              hx-trigger="load"
+                              hx-swap="innerHTML">
+                            <span class="text-xs text-gray-300">...</span>
+                        </span>
                     </td>
                     <td class="px-6 py-4 text-sm text-gray-500">{entry.locale}</td>
                     <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">

@@ -21,6 +21,10 @@
             <artifactId>cms-admin-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.quarkus.cms</groupId>
+            <artifactId>cms-webhooks</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-qute</artifactId>
         </dependency>

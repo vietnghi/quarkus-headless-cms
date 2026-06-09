@@ -1,0 +1,297 @@
+{#include admin/base title=title}
+{#body}
+<div class="max-w-4xl mx-auto space-y-6" x-data="workflowEditor()">
+    <!-- Back Link -->
+    <a href="/admin/review-workflows"
+       class="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-cms-600 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Back to Workflows
+    </a>
+
+    <!-- Header -->
+    <div class="flex items-center justify-between bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">{title}</h1>
+            <p class="text-sm text-gray-500 mt-1">
+                {#if workflow}
+                Workflow ID: <code class="font-mono text-xs bg-gray-100 px-1.5 py-0.5 rounded">{workflow.id}</code>
+                {#else}
+                Define the stages content passes through before publication
+                {/if}
+            </p>
+        </div>
+    </div>
+
+    <!-- Error Message -->
+    {#if error??}
+    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+        {error}
+    </div>
+    {/if}
+
+    <!-- Main Form -->
+    <form method="POST"
+          action="{isNew ? '/admin/review-workflows' : '/admin/review-workflows/' + workflow.id + '/update'}"
+          class="space-y-6"
+          @submit="prepareForm()">
+
+        <!-- Workflow Details -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                <h2 class="text-sm font-semibold text-gray-600 uppercase tracking-wider">Workflow Details</h2>
+            </div>
+            <div class="p-6 space-y-5">
+                <!-- Name -->
+                <div class="space-y-1.5">
+                    <label for="name" class="block text-sm font-medium text-gray-700">
+                        Name <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="name" name="name"
+                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cms-500 focus:border-transparent"
+                           placeholder="e.g. Simple Approval, Editorial Review"
+                           value="{workflow ? workflow.name : ''}"
+                           required>
+                </div>
+
+                <!-- Description -->
+                <div class="space-y-1.5">
+                    <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                    <textarea id="description" name="description" rows="2"
+                              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cms-500 focus:border-transparent"
+                              placeholder="Optional description of this workflow's purpose">{workflow ? workflow.description : ''}</textarea>
+                </div>
+
+                <!-- Content Type Mapping -->
+                <div class="space-y-1.5">
+                    <label for="contentTypes" class="block text-sm font-medium text-gray-700">
+                        Content Types
+                    </label>
+                    <p class="text-xs text-gray-400 mb-2">Select content types this workflow applies to. Leave empty for all types.</p>
+                    <div class="border border-gray-200 rounded-lg p-3 max-h-48 overflow-y-auto space-y-2" x-data="{ cts: [] }">
+                        <p class="text-xs text-gray-400 italic">Content type selection coming soon — use JSON format below for now.</p>
+                    </div>
+                    <input type="hidden" id="contentTypesJson" name="contentTypesJson" x-model="contentTypesJson">
+                    <div class="flex gap-2 flex-wrap" x-show="selectedCts.length > 0">
+                        <template x-for="ct in selectedCts" :key="ct">
+                            <span class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded bg-cms-50 text-cms-700">
+                                <span x-text="ct"></span>
+                                <button type="button" @click="removeContentType(ct)" class="hover:text-cms-900">&times;</button>
+                            </span>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Toggles -->
+                <div class="flex items-center gap-8">
+                    <label class="inline-flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="isDefault" value="on"
+                               class="rounded border-gray-300 text-cms-600 focus:ring-cms-500"
+                               {#if workflow && workflow.isDefault}checked{/if}>
+                        <span class="text-sm text-gray-700">Set as default workflow</span>
+                    </label>
+                    {#if workflow}
+                    <label class="inline-flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="active" value="on"
+                               class="rounded border-gray-300 text-cms-600 focus:ring-cms-500"
+                               {#if workflow.active}checked{/if}>
+                        <span class="text-sm text-gray-700">Active</span>
+                    </label>
+                    {/if}
+                </div>
+            </div>
+        </div>
+
+        <!-- Stage Editor -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+                <h2 class="text-sm font-semibold text-gray-600 uppercase tracking-wider">Stages</h2>
+                <button type="button" @click="addStage()"
+                        class="inline-flex items-center gap-1 px-3 py-1.5 text-sm bg-cms-600 text-white rounded-lg hover:bg-cms-700 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    Add Stage
+                </button>
+            </div>
+
+            <div class="p-6">
+                <p class="text-xs text-gray-400 mb-4">
+                    Stages define the workflow path. Drag to reorder, or use the order buttons.
+                    The first stage is the initial stage where new entries begin.
+                </p>
+
+                <!-- Stage list -->
+                <div class="space-y-3" id="stage-list">
+                    <template x-for="(stage, index) in stages" :key="index">
+                        <div class="border border-gray-200 rounded-lg p-4 bg-white hover:border-cms-300 transition-colors"
+                             :style="{ 'border-left': '4px solid ' + stage.color }">
+                            <div class="flex items-start gap-3">
+                                <!-- Order controls -->
+                                <div class="flex flex-col items-center gap-0.5 pt-1">
+                                    <button type="button" @click="moveStage(index, -1)" :disabled="index === 0"
+                                            class="p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+                                    </button>
+                                    <span class="text-xs font-mono text-gray-400" x-text="index + 1"></span>
+                                    <button type="button" @click="moveStage(index, 1)" :disabled="index === stages.length - 1"
+                                            class="p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                    </button>
+                                </div>
+
+                                <!-- Stage fields -->
+                                <div class="flex-1 space-y-3">
+                                    <div class="flex items-center gap-3">
+                                        <!-- Name -->
+                                        <div class="flex-1">
+                                            <label class="block text-xs font-medium text-gray-500 mb-0.5">
+                                                Stage Name <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="text"
+                                                   x-model="stage.name"
+                                                   placeholder="e.g. Draft, In Review, Approved"
+                                                   class="w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-cms-500 focus:border-transparent"
+                                                   @input="syncStageNames()">
+                                        </div>
+                                        <!-- Color -->
+                                        <div class="w-20">
+                                            <label class="block text-xs font-medium text-gray-500 mb-0.5">Color</label>
+                                            <input type="color"
+                                                   x-model="stage.color"
+                                                   class="w-full h-8 rounded-lg border border-gray-300 cursor-pointer p-0.5">
+                                        </div>
+                                    </div>
+
+                                    <!-- Stage options -->
+                                    <div class="flex items-center gap-4">
+                                        <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                                            <input type="checkbox" x-model="stage.isFinal"
+                                                   class="rounded border-gray-300 text-cms-600 focus:ring-cms-500 w-3.5 h-3.5">
+                                            <span class="text-xs text-gray-600">Final stage</span>
+                                        </label>
+                                        <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                                            <input type="checkbox" x-model="stage.allowsEditing"
+                                                   class="rounded border-gray-300 text-cms-600 focus:ring-cms-500 w-3.5 h-3.5">
+                                            <span class="text-xs text-gray-600">Allows editing</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Remove -->
+                                <button type="button" @click="removeStage(index)"
+                                        class="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors mt-1"
+                                        title="Remove stage">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Empty state -->
+                <div x-show="stages.length === 0" class="text-center py-8 text-gray-400">
+                    <svg class="w-10 h-10 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2M9 5h6"/></svg>
+                    <p class="text-sm">No stages yet. Click "Add Stage" to create your workflow.</p>
+                </div>
+
+                <!-- Hidden input for stage data -->
+                <input type="hidden" name="stageNames" id="stageNames" x-model="stageNamesValue">
+                <input type="hidden" name="stageColors" id="stageColors" x-model="stageColorsValue">
+            </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex items-center justify-between bg-white rounded-xl shadow-sm border border-gray-100 px-6 py-4">
+            <a href="/admin/review-workflows" class="text-sm text-gray-500 hover:text-gray-700 transition-colors">
+                Cancel
+            </a>
+            <div class="flex items-center gap-3">
+                {#if workflow}
+                <span class="text-xs text-gray-400">Last updated: {workflow.updatedAt ? workflow.updatedAt.substring(0, 19).replace('T', ' ') : '—'}</span>
+                {/if}
+                <button type="submit"
+                        class="px-6 py-2 bg-cms-600 text-white rounded-lg hover:bg-cms-700 text-sm font-medium transition-colors">
+                    {isNew ? 'Create Workflow' : 'Save Changes'}
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('workflowEditor', () => ({
+            stages: [],
+            selectedCts: [],
+            contentTypesJson: '[]',
+
+            init() {
+                // Initialize from server-rendered data
+                {#if workflow && stages}
+                this.stages = [
+                    {#for stage in stages}
+                    {
+                        name: '{stage.name}',
+                        color: '{stage.color}',
+                        isFinal: {#if stage.isFinal}true{#else}false{/if},
+                        allowsEditing: {#if stage.allowsEditing}true{#else}false{/if}
+                    }{#if stage_hasNext},{/if}
+                    {/for}
+                ];
+                this.selectedCts = {#if workflow.contentTypes}[{#for ct in workflow.contentTypes}'{ct}'{#if ct_hasNext},{/if}{/for}]{#else}[]{/if};
+                this.contentTypesJson = JSON.stringify(this.selectedCts);
+                {#else}
+                // Default: initial stage
+                this.stages = [
+                    { name: 'Draft', color: '#6B7280', isFinal: false, allowsEditing: true }
+                ];
+                {/if}
+            },
+
+            get stageNamesValue() {
+                return this.stages.map(s => s.name).join(',');
+            },
+
+            get stageColorsValue() {
+                return this.stages.map(s => s.color).join(',');
+            },
+
+            addStage() {
+                const defaultColors = ['#4945FF', '#6B7280', '#059669', '#D97706', '#DC2626', '#7C3AED', '#0891B2', '#BE185D'];
+                const color = defaultColors[this.stages.length % defaultColors.length];
+                this.stages.push({
+                    name: '',
+                    color: color,
+                    isFinal: false,
+                    allowsEditing: true
+                });
+            },
+
+            removeStage(index) {
+                if (this.stages.length <= 1) return;
+                this.stages.splice(index, 1);
+            },
+
+            moveStage(index, direction) {
+                const target = index + direction;
+                if (target < 0 || target >= this.stages.length) return;
+                const temp = this.stages[target];
+                this.stages[target] = this.stages[index];
+                this.stages[index] = temp;
+            },
+
+            removeContentType(ct) {
+                this.selectedCts = this.selectedCts.filter(c => c !== ct);
+                this.contentTypesJson = JSON.stringify(this.selectedCts);
+            },
+
+            syncStageNames() {
+                // No-op: names are read from x-model binds
+            },
+
+            prepareForm() {
+                this.contentTypesJson = JSON.stringify(this.selectedCts);
+            }
+        }));
+    });
+</script>
+{/body}
+{/include}

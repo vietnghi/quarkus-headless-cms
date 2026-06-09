@@ -1,0 +1,210 @@
+{#include admin/base title=title}
+{#body}
+<div class="max-w-5xl mx-auto space-y-6">
+    <!-- Back Link -->
+    <a href="/admin/webhooks-ui" class="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-cms-600 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Back to Webhooks
+    </a>
+
+    <!-- Test Dispatch Result -->
+    {#if testSent}
+    <div class="px-4 py-3 rounded-lg bg-green-50 border border-green-200 text-sm text-green-700">
+        <div class="flex items-start gap-2">
+            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <div>
+                <span class="font-medium">Test dispatch sent!</span>
+                <p class="text-xs mt-0.5">A test webhook payload was dispatched to {webhook.url}. Check the delivery log below for the result.</p>
+            </div>
+        </div>
+    </div>
+    {/if}
+
+    {#if testResult?? && testResult.error??}
+    <div class="px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700">
+        <div class="flex items-start gap-2">
+            <svg class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <div>
+                <span class="font-medium">Test dispatch failed</span>
+                <p class="text-xs mt-0.5">{testResult.error}</p>
+            </div>
+        </div>
+    </div>
+    {/if}
+
+    <!-- Webhook Info Card -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="flex items-start justify-between">
+            <div>
+                <div class="flex items-center gap-3">
+                    <h1 class="text-xl font-bold text-gray-900">{webhook.name}</h1>
+                    {#if webhook.isEnabled}
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">Enabled</span>
+                    {#else}
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">Disabled</span>
+                    {/if}
+                </div>
+                <p class="text-sm text-gray-500 mt-1 font-mono">{webhook.url}</p>
+                {#if webhook.events?? && !webhook.events.isEmpty()}
+                <div class="flex flex-wrap gap-1 mt-2">
+                    {#for event in webhook.events}
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-cms-50 text-cms-700">{event}</span>
+                    {/for}
+                </div>
+                {/if}
+            </div>
+            <div class="flex items-center gap-2">
+                <form method="post" action="/admin/webhooks-ui/{webhook.id}/test" class="inline">
+                    <button type="submit"
+                            class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-cms-600 bg-cms-50 rounded-lg hover:bg-cms-100 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Test Dispatch
+                    </button>
+                </form>
+                <a href="/admin/webhooks-ui/{webhook.id}/edit"
+                   class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                    Edit
+                </a>
+            </div>
+        </div>
+
+        {#if webhook.secret?? && !webhook.secret.isEmpty()}
+        <div class="mt-4 pt-4 border-t border-gray-100">
+            <p class="text-xs text-gray-400">
+                <span class="font-medium">HMAC Secret:</span>
+                <code class="ml-1 bg-gray-100 px-1.5 py-0.5 rounded text-xs">{webhook.secret.substring(0, Math.min(webhook.secret.length(), 16))}{webhook.secret.length() > 16 ? '...' : ''}</code>
+                &middot; Max Retries: {webhook.maxRetries} &middot; Timeout: {webhook.timeoutMs}ms
+            </p>
+        </div>
+        {/if}
+    </div>
+
+    <!-- Delivery Log -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <div>
+                <h2 class="text-lg font-semibold text-gray-900">Delivery Log</h2>
+                <p class="text-sm text-gray-500 mt-0.5">{totalDeliveries} delivery{totalDeliveries == 1 ? '' : 'ies'}</p>
+            </div>
+            <div class="flex items-center gap-3 text-sm text-gray-500">
+                <span class="flex items-center gap-1">
+                    <span class="w-2 h-2 rounded-full bg-green-500"></span> Success
+                </span>
+                <span class="flex items-center gap-1">
+                    <span class="w-2 h-2 rounded-full bg-red-500"></span> Failed
+                </span>
+                <span class="flex items-center gap-1">
+                    <span class="w-2 h-2 rounded-full bg-yellow-500"></span> Pending
+                </span>
+            </div>
+        </div>
+
+        {#if deliveries.isEmpty()}
+        <div class="px-6 py-12 text-center text-gray-400">
+            <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <p class="text-sm font-medium text-gray-500 mb-1">No deliveries yet</p>
+            <p class="text-xs">Send a test dispatch or wait for content events to trigger this webhook.</p>
+        </div>
+        {#else}
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th class="px-6 py-3">Status</th>
+                        <th class="px-6 py-3">Event</th>
+                        <th class="px-6 py-3">Target</th>
+                        <th class="px-6 py-3">HTTP</th>
+                        <th class="px-6 py-3">Duration</th>
+                        <th class="px-6 py-3">Attempt</th>
+                        <th class="px-6 py-3">Date</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    {#for d in deliveries}
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-3">
+                            {#switch d.status}
+                            {#case 'SUCCESS'}
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">
+                                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                Success
+                            </span>
+                            {#case 'FAILED'}
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700">
+                                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                                Failed
+                            </span>
+                            {#case 'RETRYING'}
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700">
+                                <span class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span>
+                                Retrying
+                            </span>
+                            {#case 'PENDING'}
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
+                                <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                                Pending
+                            </span>
+                            {#else}
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gray-50 text-gray-600">
+                                {d.status}
+                            </span>
+                            {/switch}
+                        </td>
+                        <td class="px-6 py-3 text-gray-600 font-mono text-xs">{d.eventType}</td>
+                        <td class="px-6 py-3 text-gray-500 text-xs max-w-[200px] truncate" title="{d.targetUrl}">{d.targetUrl}</td>
+                        <td class="px-6 py-3">
+                            {#if d.httpStatus??}
+                            <span class="font-mono text-xs {d.httpStatus >= 200 && d.httpStatus < 300 ? 'text-green-600' : d.httpStatus >= 400 ? 'text-red-600' : 'text-yellow-600'}">{d.httpStatus}</span>
+                            {#else}
+                            <span class="text-gray-400">—</span>
+                            {/if}
+                        </td>
+                        <td class="px-6 py-3 text-gray-500 text-xs">
+                            {#if d.durationMs??}
+                            {d.durationMs}ms
+                            {#else}
+                            <span class="text-gray-400">—</span>
+                            {/if}
+                        </td>
+                        <td class="px-6 py-3 text-gray-500 text-xs">
+                            {d.attemptNumber}/{d.maxAttempts}
+                        </td>
+                        <td class="px-6 py-3 text-gray-400 text-xs whitespace-nowrap">
+                            {d.createdAt?.toString()?.substring(0, 19)?.replace('T', ' ')}
+                        </td>
+                    </tr>
+                    {#if d.errorMessage?? && !d.errorMessage.isEmpty()}
+                    <tr class="bg-red-50/50">
+                        <td colspan="7" class="px-6 py-2 text-xs text-red-600 font-mono">
+                            Error: {d.errorMessage}
+                        </td>
+                    </tr>
+                    {/if}
+                    {#if d.responseBody?? && !d.responseBody.isEmpty()}
+                    <tr class="bg-gray-50">
+                        <td colspan="7" class="px-6 py-2 text-xs text-gray-500 font-mono truncate max-w-0" title="{d.responseBody}">
+                            Response: {d.responseBody}
+                        </td>
+                    </tr>
+                    {/if}
+                    {/for}
+                </tbody>
+            </table>
+        </div>
+        {/if}
+    </div>
+</div>
+{/body}
+{/include}

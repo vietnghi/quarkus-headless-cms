@@ -1,0 +1,214 @@
+{#include admin/base title=title}
+{#body}
+<div class="max-w-5xl mx-auto space-y-6">
+    <!-- Back Link -->
+    <a href="/admin/roles-ui"
+       class="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-cms-600 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Back to Roles
+    </a>
+
+    <!-- Header -->
+    <div class="flex items-center justify-between bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">{title}</h1>
+            {#if role}
+            <p class="text-sm text-gray-500 mt-1">
+                <code class="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded">{role.code}</code>
+                {#if isBuiltIn}
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700 ml-2">Built-in Role</span>
+                {/if}
+            </p>
+            {/if}
+        </div>
+    </div>
+
+    <!-- Error / Flash Messages -->
+    {#if errorMessage?? && errorMessage != null}
+    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+        {errorMessage}
+    </div>
+    {/if}
+    {#if flashMessage?? && flashMessage != null}
+    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        {flashMessage}
+    </div>
+    {/if}
+
+    <form method="POST" action="{isNew ? '/admin/roles-ui/create' : '/admin/roles-ui/' + role.id + '/update'}"
+          class="space-y-6">
+
+        <!-- Role Metadata -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                <h2 class="text-lg font-semibold text-gray-900">Role Details</h2>
+                <p class="text-xs text-gray-400 mt-0.5">Basic information about the role</p>
+            </div>
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="space-y-1.5">
+                    <label for="name" class="block text-sm font-medium text-gray-700">Name <span class="text-red-500">*</span></label>
+                    <input type="text" id="name" name="name" required
+                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cms-500 focus:border-transparent"
+                           placeholder="Editor, Author, Reviewer..."
+                           value="{role ? role.name : ''}">
+                </div>
+                {#if isNew}
+                <div class="space-y-1.5">
+                    <label for="code" class="block text-sm font-medium text-gray-700">Code <span class="text-red-500">*</span></label>
+                    <input type="text" id="code" name="code" required
+                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-cms-500 focus:border-transparent"
+                           placeholder="editor, author, reviewer...">
+                    <p class="text-xs text-gray-400 mt-1">Unique identifier, e.g. "content-editor". Cannot be changed after creation.</p>
+                </div>
+                {/if}
+                <div class="space-y-1.5 md:col-span-2">
+                    <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                    <textarea id="description" name="description" rows="2"
+                              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cms-500 focus:border-transparent"
+                              placeholder="Optional role description...">{role ? role.description : ''}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Permission Matrix -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+             x-data="{ selectAll: false }">
+            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-900">Permissions</h2>
+                    <p class="text-xs text-gray-400 mt-0.5">Select the actions this role should be allowed to perform</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <label class="inline-flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                        <input type="checkbox" x-model="selectAll"
+                               @change="document.querySelectorAll('.perm-checkbox').forEach(cb => cb.checked = $el.checked)"
+                               class="rounded border-gray-300 text-cms-600 focus:ring-cms-500">
+                        Select All
+                    </label>
+                </div>
+            </div>
+
+            <div class="divide-y divide-gray-100">
+                {#for group in permissionActions}
+                <div class="px-6 py-4" x-data="{ open: true }">
+                    <div class="flex items-center justify-between mb-3">
+                        <button type="button" @click="open = !open"
+                                class="flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-cms-600 transition-colors">
+                            <svg x-show="open" class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                            <svg x-show="!open" class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                            {group.label}
+                        </button>
+                        <label class="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-cms-600 cursor-pointer"
+                               @click="
+                                    var checked = $event.target.checked;
+                                    var parentDiv = $event.target.closest('[x-data]');
+                                    parentDiv.querySelectorAll('.perm-checkbox-' + '{group.id}').forEach(cb => cb.checked = checked);
+                               ">
+                            <input type="checkbox"
+                                   class="rounded border-gray-300 text-cms-600 focus:ring-cms-500"
+                                   @click.stop>
+                            Group toggle
+                        </label>
+                    </div>
+                    <div x-show="open" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                        {#for item in group.items}
+                        <label class="flex items-start gap-2 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                            <input type="checkbox" name="permissions" value="{item.action}"
+                                   class="perm-checkbox perm-checkbox-{group.id} mt-0.5 rounded border-gray-300 text-cms-600 focus:ring-cms-500"
+                                   {#if selectedPermissions.contains(item.action)}checked{/if}>
+                            <div>
+                                <p class="text-sm text-gray-800 font-medium">{item.label}</p>
+                                <p class="text-xs text-gray-400">{item.description}</p>
+                            </div>
+                        </label>
+                        {/for}
+                    </div>
+                </div>
+                {/for}
+            </div>
+
+            {#if permissionActions.isEmpty()}
+            <div class="px-6 py-12 text-center text-gray-400">
+                <p>No permission actions defined.</p>
+            </div>
+            {/if}
+        </div>
+
+        <!-- Permission Summary (read-only for built-in) -->
+        {#if role && !isNew}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                <h2 class="text-lg font-semibold text-gray-900">Current Permissions ({role.permissions.size()})</h2>
+            </div>
+            <div class="p-6">
+                <div class="flex flex-wrap gap-2">
+                    {#for perm in role.permissions}
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-cms-50 text-cms-700">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        {perm.action}
+                    </span>
+                    {/for}
+                </div>
+                {#if role.permissions.isEmpty()}
+                <p class="text-sm text-gray-400 text-center py-2">No permissions assigned to this role.</p>
+                {/if}
+            </div>
+        </div>
+        {/if}
+
+        <!-- Role Metadata (read-only details) -->
+        {#if role}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                <h2 class="text-lg font-semibold text-gray-900">Details</h2>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase tracking-wider">Code</p>
+                        <p class="text-sm font-mono text-gray-900 mt-1">{role.code}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase tracking-wider">Created</p>
+                        <p class="text-sm text-gray-900 mt-1">{role.createdAt ? role.createdAt.toString().substring(0, 10) : '-'}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase tracking-wider">Updated</p>
+                        <p class="text-sm text-gray-900 mt-1">{role.updatedAt ? role.updatedAt.toString().substring(0, 10) : '-'}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {/if}
+
+        <!-- Form Footer -->
+        <div class="flex items-center justify-between bg-white rounded-xl shadow-sm border border-gray-100 px-6 py-4">
+            <a href="/admin/roles-ui"
+               class="text-sm text-gray-500 hover:text-gray-700 transition-colors">
+                Cancel
+            </a>
+            <div class="flex items-center gap-3">
+                {#if !isNew && role && !isBuiltIn}
+                <form method="POST" action="/admin/roles-ui/{role.id}/delete" class="inline"
+                      onsubmit="return confirm('Permanently delete role &quot;{role.name}&quot;? All permissions will be lost.')">
+                    <button type="submit"
+                            class="px-4 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 text-sm font-medium transition-colors">
+                        Delete Role
+                    </button>
+                </form>
+                {/if}
+                <button type="submit"
+                        class="px-6 py-2 bg-cms-600 text-white rounded-lg hover:bg-cms-700 text-sm font-medium transition-colors">
+                    {isNew ? 'Create Role' : 'Save Changes'}
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{/body}
+{/include}

@@ -1,0 +1,96 @@
+{#include admin/base title=title}
+{#body}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Roles</h1>
+            <p class="text-sm text-gray-500 mt-1">{roles.size()} {roles.size() == 1 ? 'role' : 'roles'} total</p>
+        </div>
+        <a href="/admin/roles-ui/create"
+           class="inline-flex items-center gap-2 px-4 py-2 bg-cms-600 text-white rounded-lg hover:bg-cms-700 text-sm font-medium transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Add New Role
+        </a>
+    </div>
+
+    <!-- Flash Messages -->
+    {#if flashMessage?? && flashMessage != null}
+    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        {flashMessage}
+    </div>
+    {/if}
+    {#if errorMessage?? && errorMessage != null}
+    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+        {errorMessage}
+    </div>
+    {/if}
+
+    <!-- Roles Grid -->
+    {#if roles.isEmpty()}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 px-6 py-16 text-center">
+        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/></svg>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-1">No roles found</h3>
+        <p class="text-sm text-gray-500 mb-4">Roles define what actions users can perform in the CMS.</p>
+        <a href="/admin/roles-ui/create" class="inline-flex items-center gap-2 px-4 py-2 bg-cms-600 text-white rounded-lg text-sm font-medium hover:bg-cms-700">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Create First Role
+        </a>
+    </div>
+    {#else}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {#for role in roles}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+            <div class="p-6">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg {#if builtInCodes.contains(role.code)}bg-purple-100{#else}bg-cms-100{/if} flex items-center justify-center">
+                            <span class="text-sm font-bold {#if builtInCodes.contains(role.code)}text-purple-600{#else}text-cms-600{/if}">
+                                {role.name.substring(0, 1).toUpperCase()}
+                            </span>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-gray-900">{role.name}</h3>
+                            <code class="text-xs text-gray-400">{role.code}</code>
+                        </div>
+                    </div>
+                    {#if builtInCodes.contains(role.code)}
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700">
+                        Built-in
+                    </span>
+                    {/if}
+                </div>
+
+                <p class="text-sm text-gray-500 mb-4 line-clamp-2">{role.description ?: 'No description'}</p>
+
+                <div class="flex items-center justify-between text-xs text-gray-400 mb-4">
+                    <span>{role.permissions.size()} {role.permissions.size() == 1 ? 'permission' : 'permissions'}</span>
+                    <span>Updated {role.updatedAt ? role.updatedAt.toString().substring(0, 10) : '-'}</span>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <a href="/admin/roles-ui/{role.id}"
+                       class="flex-1 text-center px-3 py-2 bg-cms-600 text-white rounded-lg hover:bg-cms-700 text-sm font-medium transition-colors">
+                        Edit
+                    </a>
+                    {#if !builtInCodes.contains(role.code)}
+                    <form method="POST" action="/admin/roles-ui/{role.id}/delete" class="flex-1"
+                          onsubmit="return confirm('Permanently delete the role &quot;{role.name}&quot;? This cannot be undone.')">
+                        <button type="submit"
+                                class="w-full px-3 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 text-sm font-medium transition-colors">
+                            Delete
+                        </button>
+                    </form>
+                    {/if}
+                </div>
+            </div>
+        </div>
+        {/for}
+    </div>
+    {/if}
+</div>
+{/body}
+{/include}
