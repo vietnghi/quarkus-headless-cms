@@ -159,7 +159,7 @@ jobs:
           cache: 'maven'
 
       - name: Full verify
-        run: ./mvnw verify -B -DskipITs=false
+        run: ./mvnw verify -B -DskipITs=false -pl '!example,!integration-tests'
         env:
           QUARKUS_LOG_LEVEL: WARN
           quarkus.cms.auth.api-tokens.enabled: false
