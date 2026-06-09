@@ -10,7 +10,6 @@ import com.quarkus.cms.i18n.service.I18nService;
 import com.quarkus.cms.i18n.service.LocaleService;
 
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -108,7 +107,7 @@ class I18nIntegrationTest {
   // ---- I18nService ----
 
   @Test
-  @TestTransaction
+  @Transactional
   void shouldCreateLocalization() {
     localeService.createLocale(new LocaleDto("en", "English", true, true));
     localeService.createLocale(new LocaleDto("fr", "French", false, true));
@@ -133,7 +132,7 @@ class I18nIntegrationTest {
   }
 
   @Test
-  @TestTransaction
+  @Transactional
   void shouldListLocalizations() {
     localeService.createLocale(new LocaleDto("en", "English", true, true));
     localeService.createLocale(new LocaleDto("fr", "French", false, true));
@@ -154,7 +153,7 @@ class I18nIntegrationTest {
   }
 
   @Test
-  @TestTransaction
+  @Transactional
   void shouldThrowOnDuplicateLocalization() {
     localeService.createLocale(new LocaleDto("en", "English", true, true));
     localeService.createLocale(new LocaleDto("fr", "French", false, true));
@@ -170,7 +169,7 @@ class I18nIntegrationTest {
   }
 
   @Test
-  @TestTransaction
+  @Transactional
   void shouldGetWithFallback() {
     localeService.createLocale(new LocaleDto("en", "English", true, true));
     localeService.createLocale(new LocaleDto("fr", "French", false, true));
@@ -186,7 +185,7 @@ class I18nIntegrationTest {
   }
 
   @Test
-  @TestTransaction
+  @Transactional
   void shouldGetLocalizationsSummary() {
     localeService.createLocale(new LocaleDto("en", "English", true, true));
     localeService.createLocale(new LocaleDto("fr", "French", false, true));
