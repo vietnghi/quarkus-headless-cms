@@ -5,8 +5,10 @@ import static org.hamcrest.Matchers.*;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
-import org.junit.jupiter.api.Disabled;
 import com.quarkus.cms.it.support.SampleDataTestProfile;
+import java.time.Duration;
+import java.util.concurrent.atomic.AtomicReference;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -29,9 +31,49 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @TestProfile(SampleDataTestProfile.class)
-@Disabled("Seed data not loading in PostgreSQL Testcontainers — needs seeder timing fix")
 @DisplayName("Sample Data Verification")
 class SampleDataVerificationIT {
+
+  /**
+   * Waits for the sample seed data to be available before running any test methods.
+   *
+   * <p>When running against PostgreSQL Testcontainers the {@code SampleContentSeeder}
+   * runs during application startup but the seeded data may not be immediately visible
+   * due to transaction boundaries and container startup timing. This method polls the
+   * {@code /api/tag} endpoint every 2 seconds (up to 30 seconds) until 10 seeded tags
+   * are returned, then allows the tests to proceed.
+   */
+  @BeforeAll
+  static void waitForSeedData() {
+    long deadline = System.currentTimeMillis() + Duration.ofSeconds(30).toMillis();
+    AtomicReference<Throwable> lastError = new AtomicReference<>();
+
+    while (System.currentTimeMillis() < deadline) {
+      try {
+        given()
+            .queryParam("publicationState", "preview")
+            .when()
+            .get("/api/tag")
+            .then()
+            .statusCode(200)
+            .body("data.size()", is(10));
+        // Data is available — proceed
+        return;
+      } catch (AssertionError | Exception e) {
+        lastError.set(e);
+        try {
+          Thread.sleep(2000);
+        } catch (InterruptedException ie) {
+          Thread.currentThread().interrupt();
+          throw new RuntimeException("Interrupted while waiting for seed data", ie);
+        }
+      }
+    }
+
+    throw new RuntimeException(
+        "Seed data not available after 30s. Expected 10 tags via /api/tag.\n" +
+        "Last error: " + (lastError.get() != null ? lastError.get().getMessage() : "unknown"));
+  }
 
   // ========================================================================
   // Tag Verification

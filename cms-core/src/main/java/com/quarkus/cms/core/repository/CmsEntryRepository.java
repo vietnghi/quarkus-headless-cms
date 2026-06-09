@@ -96,7 +96,11 @@ public class CmsEntryRepository {
     if (entry == null) {
       throw new IllegalArgumentException("Draft entry not found for documentId=" + documentId + " locale=" + resolvedLocale);
     }
-    entry.data = data;
+    // Merge: preserve existing fields not in the update body
+    Map<String, Object> merged = new java.util.HashMap<>(
+        entry.data != null ? entry.data : java.util.Collections.emptyMap());
+    merged.putAll(data);
+    entry.data = merged;
     if (updatedById != null) {
       entry.updatedById = updatedById;
     }

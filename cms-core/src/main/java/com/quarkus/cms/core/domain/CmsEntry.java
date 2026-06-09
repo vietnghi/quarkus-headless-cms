@@ -65,7 +65,7 @@ public class CmsEntry extends PanacheEntityBase {
   public Long publishedById;
 
   @Convert(converter = JsonMapConverter.class)
-  @Column(name = "data")
+  @Column(name = "data", length = 65535)
   public Map<String, Object> data = new HashMap<>();
 
   // ---- Helper Finders ----
