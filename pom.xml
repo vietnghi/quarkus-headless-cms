@@ -225,7 +225,13 @@
                 <version>3.27.3</version>
                 <scope>test</scope>
             </dependency>
-        </dependencies>
+                <!-- H2 for test reliability (SQLite fails write→read in @QuarkusTest) -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jdbc-h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
     </dependencyManagement>
 
     <!--
@@ -311,7 +317,13 @@
                             <artifactId>checkstyle</artifactId>
                             <version>10.21.4</version>
                         </dependency>
-                    </dependencies>
+                            <!-- H2 for test reliability (SQLite fails write→read in @QuarkusTest) -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jdbc-h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
                     <configuration>
                         <configLocation>checkstyle.xml</configLocation>
                         <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>

@@ -80,6 +80,12 @@
             <artifactId>hibernate-community-dialects</artifactId>
             <scope>test</scope>
         </dependency>
+            <!-- H2 for test reliability (SQLite fails write→read in @QuarkusTest) -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jdbc-h2</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
