@@ -142,6 +142,7 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-jdbc-h2</artifactId>
+            <version>${quarkus.platform.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
