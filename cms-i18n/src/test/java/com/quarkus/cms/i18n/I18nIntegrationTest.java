@@ -10,7 +10,6 @@ import com.quarkus.cms.i18n.service.I18nService;
 import com.quarkus.cms.i18n.service.LocaleService;
 
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
@@ -23,12 +22,9 @@ import org.junit.jupiter.api.Test;
 /**
  * Integration test for the i18n module.
  *
- * <p>Tests the full LocaleService and I18nService with a SQLite database.
- * Each {@code @Transactional} service method runs in its own committed
- * transaction, so data persisted by one call is visible to the next.
+ * <p>Tests the full LocaleService and I18nService with a real H2 database.
  */
 @QuarkusTest
-@TestProfile(I18nH2Profile.class)
 class I18nIntegrationTest {
 
   @Inject
@@ -110,12 +106,11 @@ class I18nIntegrationTest {
     localeService.createLocale(new LocaleDto("en", "English", true, true));
     localeService.createLocale(new LocaleDto("fr", "French", false, true));
 
-    // Create an entry in English — this commits in its own @Transactional
+    // Create an entry in English
     CmsEntry enEntry = entryRepository.create("api::article.article",
         Map.of("title", "Hello World", "content", "Great article"), "en");
 
-    // Create French localization — runs in its own @Transactional,
-    // reads the already-committed entry
+    // Create French localization
     CmsEntry frEntry = i18nService.createLocalization(
         enEntry.documentId, "en", "fr",
         Map.of("title", "Bonjour le Monde"), 1L);
