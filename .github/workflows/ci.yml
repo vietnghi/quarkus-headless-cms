@@ -31,10 +31,10 @@ jobs:
           cache: 'maven'
 
       - name: Compile
-        run: ./mvnw compile test-compile -q -B
+        run: ./mvnw compile test-compile -q -B -pl '!integration-tests,!example'
 
       - name: Run unit tests
-        run: ./mvnw test -B -T 1C
+        run: ./mvnw test -B -T 1C -pl '!integration-tests,!example'
         env:
           QUARKUS_LOG_LEVEL: WARN
           quarkus.cms.auth.api-tokens.enabled: false
@@ -103,7 +103,7 @@ jobs:
           cache: 'maven'
 
       - name: Build and check coverage
-        run: ./mvnw test jacoco:check -B -T 1C
+        run: ./mvnw test jacoco:check -B -T 1C -pl '!integration-tests,!example'
         env:
           QUARKUS_LOG_LEVEL: WARN
           quarkus.cms.auth.api-tokens.enabled: false
