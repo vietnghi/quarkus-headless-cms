@@ -21,3 +21,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **GraphQL Integration**: Added dynamic, schema-driven GraphQL schema generation using SmallRye GraphQL.
 - **Example & Integration Test Apps**: Built a sample application showing extension usage, accompanied by complete endpoint test coverages.
 - **Comprehensive Documentation**: Authored `README.md`, `API_DOCUMENTATION.md`, `DEVELOPER_GUIDE.md`, and this `CHANGELOG.md`.
+
+## [1.0.0-SNAPSHOT] - 2026-06-09
+
+### Added
+- **Admin UI: Webhooks management page** — Full CRUD UI for webhooks with delivery log viewer and test dispatch button at `/admin/webhooks-ui`.
+- **Admin UI: Users & Roles management** — CRUD pages for admin users and roles with permission matrix (resource × action grid) at `/admin/users-ui` and `/admin/roles-ui`.
+- **Admin UI: Review Workflows pages** — Build approval workflows with stage editor (Alpine.js reorder, color pickers), content manager integration (stage badge, review actions panel, stage history), and sidebar nav link at `/admin/review-workflows`.
+- **DynamicZoneEdgeCasesIT fix** — `CmsEntryRepository.update()` now merges instead of replacing data (partial PUT preserves omitted fields), `@Column(length=65535)` on the data column, `@Disabled` annotation removed.

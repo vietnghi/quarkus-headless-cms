@@ -42,7 +42,7 @@ The system is designed as a modular parent aggregator Maven project. By packagin
 | `cms-core` | Schema parsing, database entities, validation, in-memory registry. | Jackson, Hibernate, networknt schema validator |
 | `cms-rest-api` | Client content endpoints, dynamic LHS bracket query parser, SQL translation. | RESTEasy Reactive, CmsQueryBuilder |
 | `cms-admin-api`| JAX-RS routes serving the administrative UI. | RESTEasy, Jackson |
-| `cms-admin-ui` | Sidebar templates, forms, drag-and-drop lists, and HTMX configurations. | Quarkus Qute, HTMX, Tailwind CSS |
+| `cms-admin-ui` | Qute HTML templates, Tailwind configurations, and HTMX flows for the admin dashboard (Content Manager, Content-Type Builder, Webhooks, Users & Roles, Review Workflows). | Quarkus Qute, HTMX, Tailwind CSS |
 | `cms-auth` | User accounts, credentials, JWT signature keys, dynamic client API Tokens. | SmallRye JWT, bcrypt |
 | `cms-media` | File upload streams, mime-type verification, image resizing, S3 integrations. | Apache Tika, Thumbnailator, AWS S3 Client |
 | `cms-i18n` | Multi-locale registries, i18n CRUD endpoints, Accept-Language fallbacks. | CmsLocale, LocaleService |

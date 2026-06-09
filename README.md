@@ -52,6 +52,11 @@ A high-performance, lightweight headless CMS built on the Quarkus reactive Java 
 - **Hybrid Document-on-RDBMS Schema**: Dynamic content-type definitions are compiled to a generic `JSONB` data column inside a standard static database table (`cms_entries`). This allows instant schema modifications in production with zero database schema migration overhead, retaining full GraalVM native compilation support.
 - **Dynamic Document Service & Query Engine**: Standard REST and GraphQL dynamic content manipulation including draft/publish mechanics, internationalization (i18n), and a query compiler that translates complex nested Left-Hand Side (LHS) bracket query parameters into efficient PostgreSQL JSONB SQL filters.
 - **SSR Administration Dashboard**: A server-side rendered, low-overhead admin portal built on **Quarkus Qute**, **HTMX**, and **Tailwind CSS**. It provides a beautiful interface that updates dynamically without client-side Javascript frameworks or single-page-app bloat.
+  - **Content Manager** — Create, edit, publish/unpublish, and manage localized content entries.
+  - **Content-Type Builder** — Define and register dynamic content schemas via the admin UI.
+  - **Webhooks** — Configure, test, and monitor webhook delivery logs at `/admin/webhooks-ui`.
+  - **Users & Roles** — Full CRUD admin for users and roles with permission matrix at `/admin/users-ui` and `/admin/roles-ui`.
+  - **Review Workflows** — Build approval workflows with stages, color coding, and review actions at `/admin/review-workflows`.
 - **Identity & Access Management (IAM)**: Dual-layer security covering stateful, cookie-based JWT sessions for administrative users, and header-based bearer access for clients using database-backed API tokens with dynamic, fine-grained RBAC permissions.
 - **Media Library & Asset Management**: Dynamic multi-part asset upload manager, supporting local disk or AWS S3 / Cloudflare R2 storage, featuring file-type verification via **Apache Tika** and thumbnail optimization via **Thumbnailator**.
 - **Reliable Non-Blocking Webhooks**: Events (create, update, delete, publish) are placed on the Vert.x Event Bus and dispatched asynchronously using non-blocking HTTP Clients, featuring HMAC-SHA256 signatures, retry configurations, and delivery auditing.
@@ -124,6 +129,12 @@ mvn -pl example quarkus:dev
 
 Once running, access the services:
 - **Admin Panel UI**: [http://localhost:8080/admin/content-manager](http://localhost:8080/admin/content-manager)
+  - Content Manager: [`/admin/content-manager`](http://localhost:8080/admin/content-manager)
+  - Content-Type Builder: [`/admin/content-types`](http://localhost:8080/admin/content-types)
+  - Webhooks: [`/admin/webhooks-ui`](http://localhost:8080/admin/webhooks-ui)
+  - Users: [`/admin/users-ui`](http://localhost:8080/admin/users-ui)
+  - Roles: [`/admin/roles-ui`](http://localhost:8080/admin/roles-ui)
+  - Review Workflows: [`/admin/review-workflows`](http://localhost:8080/admin/review-workflows)
 - **REST APIs**: [http://localhost:8080/api](http://localhost:8080/api)
 - **GraphQL & GraphiQL Playground**: [http://localhost:8080/q/graphql](http://localhost:8080/q/graphql)
 
