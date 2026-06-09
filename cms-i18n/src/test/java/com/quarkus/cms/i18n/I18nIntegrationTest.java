@@ -12,6 +12,8 @@ import com.quarkus.cms.i18n.service.LocaleService;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.TestTransaction;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
@@ -36,6 +38,9 @@ class I18nIntegrationTest {
 
   @Inject
   CmsEntryRepository entryRepository;
+
+  @PersistenceContext
+  EntityManager entityManager;
 
   @BeforeEach
   @Transactional
@@ -111,6 +116,7 @@ class I18nIntegrationTest {
     // Create an entry in English
     CmsEntry enEntry = entryRepository.create("api::article.article",
         Map.of("title", "Hello World", "content", "Great article"), "en");
+    entityManager.flush();
 
     // Create French localization
     CmsEntry frEntry = i18nService.createLocalization(
@@ -135,6 +141,7 @@ class I18nIntegrationTest {
 
     CmsEntry enEntry = entryRepository.create("api::article.article",
         Map.of("title", "Hello"), "en");
+    entityManager.flush();
 
     i18nService.createLocalization(enEntry.documentId, "en", "fr", Map.of("title", "Bonjour"), 1L);
     i18nService.createLocalization(enEntry.documentId, "en", "de", Map.of("title", "Hallo"), 1L);
@@ -154,6 +161,7 @@ class I18nIntegrationTest {
 
     CmsEntry enEntry = entryRepository.create("api::article.article",
         Map.of("title", "Hello"), "en");
+    entityManager.flush();
 
     i18nService.createLocalization(enEntry.documentId, "en", "fr", Map.of("title", "Bonjour"), 1L);
 
@@ -169,6 +177,7 @@ class I18nIntegrationTest {
 
     CmsEntry enEntry = entryRepository.create("api::article.article",
         Map.of("title", "Hello"), "en");
+    entityManager.flush();
 
     // Requesting non-existent locale should fallback to default
     CmsEntry fallback = i18nService.getWithFallback(enEntry.documentId, "de", null);
@@ -184,6 +193,7 @@ class I18nIntegrationTest {
 
     CmsEntry enEntry = entryRepository.create("api::article.article",
         Map.of("title", "Hello"), "en");
+    entityManager.flush();
 
     i18nService.createLocalization(enEntry.documentId, "en", "fr", Map.of("title", "Bonjour"), 1L);
 

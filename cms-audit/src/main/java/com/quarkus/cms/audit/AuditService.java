@@ -73,7 +73,7 @@ public class AuditService {
         return record(documentId, entryId, contentType, locale, action, userId, changes, summary);
     }
 
-    // ---- Querying ----
+    // ---- Filtered Querying ----
 
     /** Returns all audit entries for a document, newest first. */
     public List<CmsAuditLog> getHistory(String documentId) {
@@ -115,6 +115,156 @@ public class AuditService {
     @Transactional
     public long deleteHistory(String documentId) {
         return CmsAuditLog.delete("documentId", documentId);
+    }
+
+    /**
+     * Deletes audit entries older than the given number of days.
+     *
+     * @param days age threshold in days (entries older than this are deleted)
+     * @return number of deleted entries
+     */
+    @Transactional
+    public long deleteOlderThan(int days) {
+        if (days <= 0) {
+            throw new IllegalArgumentException("days must be positive");
+        }
+        java.time.Instant cutoff = java.time.Instant.now()
+            .minus(days, java.time.temporal.ChronoUnit.DAYS);
+        return CmsAuditLog.delete("createdAt < ?1", cutoff);
+    }
+
+    /**
+     * Deletes audit entries matching optional filters (for admin purge).
+     * At least olderThanDays must be provided to prevent accidental full-table purges.
+     *
+     * @param action        optional action filter
+     * @param userId        optional user id filter
+     * @param contentType   optional content type filter
+     * @param olderThanDays delete entries older than this many days (required)
+     * @return number of deleted entries
+     */
+    @Transactional
+    public long deleteFiltered(String action, Long userId, String contentType, int olderThanDays) {
+        if (olderThanDays <= 0) {
+            throw new IllegalArgumentException("olderThanDays must be positive");
+        }
+        var fb = new FilterQueryBuilder();
+        java.time.Instant cutoff = java.time.Instant.now()
+            .minus(olderThanDays, java.time.temporal.ChronoUnit.DAYS);
+        fb.addLt("createdAt", cutoff);
+        fb.addEq("action", action);
+        fb.addEq("userId", userId);
+        fb.addEq("contentType", contentType);
+        return CmsAuditLog.delete(fb.getQuery(), fb.getParams());
+    }
+
+    // ---- Paginated Filtered Querying ----
+
+    /**
+     * Builds a HQL query string and ordered parameter list from filter criteria.
+     * The query starts with "1=1" and appends numbered parameters (?1, ?2, ...).
+     */
+    private static class FilterQueryBuilder {
+        final StringBuilder hql = new StringBuilder("1=1");
+        final List<Object> params = new ArrayList<>();
+        int paramIndex = 0;
+
+        void addEq(String field, Object value) {
+            if (value == null) return;
+            if (value instanceof String s && s.isBlank()) return;
+            paramIndex++;
+            hql.append(" and ").append(field).append(" = ?").append(paramIndex);
+            params.add(value);
+        }
+
+        void addGte(String field, Object value) {
+            if (value == null) return;
+            paramIndex++;
+            hql.append(" and ").append(field).append(" >= ?").append(paramIndex);
+            params.add(value);
+        }
+
+        void addLte(String field, Object value) {
+            if (value == null) return;
+            paramIndex++;
+            hql.append(" and ").append(field).append(" <= ?").append(paramIndex);
+            params.add(value);
+        }
+
+        void addLt(String field, Object value) {
+            if (value == null) return;
+            paramIndex++;
+            hql.append(" and ").append(field).append(" < ?").append(paramIndex);
+            params.add(value);
+        }
+
+        String getQuery() { return hql.toString(); }
+        Object[] getParams() { return params.toArray(); }
+    }
+
+    /**
+     * Searches audit log entries with combined filters and pagination.
+     *
+     * @param action      optional action type filter
+     * @param userId      optional user id filter
+     * @param contentType optional content type filter
+     * @param startDate   optional start date (ISO-8601) for createdAt range
+     * @param endDate     optional end date (ISO-8601) for createdAt range
+     * @param page        zero-based page number
+     * @param pageSize    items per page (max 100)
+     * @return filtered list of CmsAuditLog entries, newest first
+     */
+    public List<CmsAuditLog> findFiltered(String action, Long userId, String contentType,
+                                           String startDate, String endDate,
+                                           int page, int pageSize) {
+        pageSize = Math.min(Math.max(pageSize, 1), 100);
+        page = Math.max(page, 0);
+
+        var fb = new FilterQueryBuilder();
+        applyFilters(fb, action, userId, contentType, startDate, endDate);
+        fb.hql.append(" order by createdAt desc");
+
+        return CmsAuditLog.find(fb.getQuery(), fb.getParams())
+            .page(page, pageSize)
+            .list();
+    }
+
+    /**
+     * Counts audit log entries matching the given filters.
+     *
+     * @param action      optional action type filter
+     * @param userId      optional user id filter
+     * @param contentType optional content type filter
+     * @param startDate   optional start date (ISO-8601)
+     * @param endDate     optional end date (ISO-8601)
+     * @return count of matching entries
+     */
+    public long countFiltered(String action, Long userId, String contentType,
+                               String startDate, String endDate) {
+        var fb = new FilterQueryBuilder();
+        applyFilters(fb, action, userId, contentType, startDate, endDate);
+        return CmsAuditLog.count(fb.getQuery(), fb.getParams());
+    }
+
+    private void applyFilters(FilterQueryBuilder fb, String action, Long userId,
+                               String contentType, String startDate, String endDate) {
+        fb.addEq("action", action);
+        fb.addEq("userId", userId);
+        fb.addEq("contentType", contentType);
+        if (startDate != null && !startDate.isBlank()) {
+            try {
+                fb.addGte("createdAt", java.time.Instant.parse(startDate));
+            } catch (Exception e) {
+                // ignore invalid date, query will just not filter
+            }
+        }
+        if (endDate != null && !endDate.isBlank()) {
+            try {
+                fb.addLte("createdAt", java.time.Instant.parse(endDate));
+            } catch (Exception e) {
+                // ignore invalid date
+            }
+        }
     }
 
     // ---- Diff computation ----

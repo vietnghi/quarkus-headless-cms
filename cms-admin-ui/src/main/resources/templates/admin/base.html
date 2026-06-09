@@ -108,12 +108,97 @@
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Top Bar -->
-            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 flex-shrink-0">
-                <div class="flex items-center gap-4">
-                    <h1 class="text-lg font-semibold text-gray-900">{title ?: 'Dashboard'}</h1>
+            <!-- Top Bar with Global Search -->
+            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 flex-shrink-0"
+                    x-data="searchBar()">
+                <div class="flex items-center gap-4 flex-1">
+                    <h1 class="text-lg font-semibold text-gray-900 whitespace-nowrap">{title ?: 'Dashboard'}</h1>
+
+                    <!-- Global Search Bar -->
+                    <div class="relative flex-1 max-w-md ml-4">
+                        <div class="relative">
+                            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            <input type="text"
+                                   x-model="q"
+                                   @input.debounce.300ms="search()"
+                                   @keydown.down.prevent="highlightNext()"
+                                   @keydown.up.prevent="highlightPrev()"
+                                   @keydown.enter.prevent="goToHighlighted()"
+                                   @keydown.escape="close()"
+                                   @focus="open()"
+                                   @click.away="close()"
+                                   placeholder="Search entries..."
+                                   class="w-full pl-9 pr-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cms-500 focus:border-cms-500 bg-gray-50">
+                        </div>
+
+                        <!-- Dropdown -->
+                        <div x-show="show"
+                             x-transition:enter="transition ease-out duration-100"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-75"
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-95"
+                             class="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 max-h-96 overflow-y-auto z-50"
+                             style="display: none;">
+
+                            <!-- Loading -->
+                            <div x-show="loading" class="p-4 text-center text-sm text-gray-500">
+                                <svg class="animate-spin inline-block w-5 h-5 mr-2 text-cms-500" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                </svg>
+                                Searching...
+                            </div>
+
+                            <!-- Recent searches -->
+                            <div x-show="!loading && q.length === 0 && recent.length > 0" class="py-1">
+                                <div class="px-3 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Recent Searches</div>
+                                <template x-for="(term, i) in recent" :key="i">
+                                    <a href="#"
+                                       @click.prevent="q = term; search()"
+                                       class="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:bg-gray-100">
+                                        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        <span x-text="term"></span>
+                                    </a>
+                                </template>
+                            </div>
+
+                            <!-- Error -->
+                            <div x-show="!loading && error" class="p-4 text-center text-sm text-red-500" x-text="error"></div>
+
+                            <!-- No results -->
+                            <div x-show="!loading && !error && q.length > 0 && results.length === 0"
+                                 class="p-4 text-center text-sm text-gray-500">
+                                No results found for "<span x-text="q"></span>"
+                            </div>
+
+                            <!-- Results -->
+                            <template x-for="(item, idx) in results" :key="item.url">
+                                <a :href="item.url"
+                                   :class="{'bg-cms-50 border-l-2 border-cms-500': idx === highlightIdx}"
+                                   class="block px-3 py-2.5 border-l-2 border-transparent hover:bg-gray-50 transition-colors duration-75">
+                                    <div class="flex items-start justify-between gap-2">
+                                        <div class="min-w-0 flex-1">
+                                            <div class="text-sm font-medium text-gray-900 truncate" x-text="item.title || '(untitled)'"></div>
+                                            <div class="text-xs text-gray-500 mt-0.5 truncate" x-show="item.excerpt" x-text="item.excerpt"></div>
+                                        </div>
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium"
+                                              :class="item.contentType === 'media' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'"
+                                              x-text="item.contentType === 'media' ? 'media' : item.contentType.split('.').pop()"></span>
+                                    </div>
+                                    <div class="text-xs text-gray-400 mt-0.5 truncate" x-text="item.url"></div>
+                                </a>
+                            </template>
+                        </div>
+                    </div>
                 </div>
-                <div class="flex items-center gap-3">
+
+                <div class="flex items-center gap-3 flex-shrink-0 ml-4">
                     <span class="text-sm text-gray-500">Development Mode</span>
                     <div class="w-8 h-8 bg-cms-100 rounded-full flex items-center justify-center">
                         <span class="text-cms-600 text-xs font-semibold">A</span>
@@ -136,5 +221,84 @@
         </div>
         {/if}
     </div>
+
+    <!-- Global Search Alpine.js Component -->
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('searchBar', () => ({
+                q: '',
+                results: [],
+                recent: JSON.parse(localStorage.getItem('cms-recent-searches') || '[]'),
+                show: false,
+                loading: false,
+                error: null,
+                highlightIdx: -1,
+
+                open() {
+                    this.show = true;
+                },
+
+                close() {
+                    this.show = false;
+                    this.highlightIdx = -1;
+                },
+
+                search() {
+                    const term = this.q.trim();
+                    if (term.length === 0) {
+                        this.results = [];
+                        this.error = null;
+                        this.show = true;
+                        return;
+                    }
+
+                    this.loading = true;
+                    this.error = null;
+                    this.highlightIdx = -1;
+
+                    fetch('/admin/search?q=' + encodeURIComponent(term) + '&pageSize=10')
+                        .then(r => {
+                            if (!r.ok) throw new Error('Search request failed');
+                            return r.json();
+                        })
+                        .then(data => {
+                            this.results = data.results || [];
+                            this.loading = false;
+                            this.show = true;
+
+                            // Save to recent searches
+                            if (this.results.length > 0 && !this.recent.includes(term)) {
+                                this.recent.unshift(term);
+                                if (this.recent.length > 5) this.recent.pop();
+                                localStorage.setItem('cms-recent-searches', JSON.stringify(this.recent));
+                            }
+                        })
+                        .catch(err => {
+                            this.error = 'Search failed: ' + err.message;
+                            this.results = [];
+                            this.loading = false;
+                        });
+                },
+
+                highlightNext() {
+                    if (this.results.length === 0) return;
+                    this.highlightIdx = (this.highlightIdx + 1) % this.results.length;
+                },
+
+                highlightPrev() {
+                    if (this.results.length === 0) return;
+                    this.highlightIdx = this.highlightIdx <= 0 ? this.results.length - 1 : this.highlightIdx - 1;
+                },
+
+                goToHighlighted() {
+                    if (this.highlightIdx >= 0 && this.highlightIdx < this.results.length) {
+                        window.location.href = this.results[this.highlightIdx].url;
+                    } else if (this.results.length > 0) {
+                        window.location.href = this.results[0].url;
+                    }
+                }
+            }));
+        });
+    </script>
 </body>
 </html>

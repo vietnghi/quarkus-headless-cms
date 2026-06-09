@@ -173,7 +173,6 @@ public class I18nService {
    * @return the best matching entry, or {@code null} if none found in any locale
    */
   public CmsEntry getWithFallback(String documentId, String requestedLocale, String status) {
-    entityManager.clear();
     String defaultLocale = localeService.getDefaultLocale();
     String resolvedLocale = requestedLocale != null ? requestedLocale : defaultLocale;
 

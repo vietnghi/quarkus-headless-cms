@@ -1,5 +1,6 @@
 package com.quarkus.cms.admin.api.resource;
 
+import com.quarkus.cms.audit.CmsAuditLog;
 import com.quarkus.cms.core.domain.CmsEntry;
 import com.quarkus.cms.core.schema.model.ContentTypeDefinition;
 import com.quarkus.cms.core.schema.storage.SchemaStorageService;
@@ -112,6 +113,17 @@ public class AdminDashboardStatsResource {
             workflowStats.add(wfStats);
         }
         stats.put("workflows", workflowStats);
+
+        // Recent audit activity
+        long auditToday = CmsAuditLog.count("createdAt >= ?1",
+            java.time.Instant.now().minus(1, java.time.temporal.ChronoUnit.DAYS));
+        long auditWeek = CmsAuditLog.count("createdAt >= ?1",
+            java.time.Instant.now().minus(7, java.time.temporal.ChronoUnit.DAYS));
+        stats.put("auditActivity", Map.of(
+            "last24h", auditToday,
+            "last7d", auditWeek,
+            "total", CmsAuditLog.count()
+        ));
 
         return Response.ok(Map.of("data", stats)).build();
     }

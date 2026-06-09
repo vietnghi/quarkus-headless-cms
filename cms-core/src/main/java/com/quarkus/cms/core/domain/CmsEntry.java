@@ -8,11 +8,6 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-
-import jakarta.persistence.Convert;
-
 /**
  * Core content entry entity implementing the hybrid document-on-RDBMS schema.
  *
@@ -33,6 +28,7 @@ public class CmsEntry extends PanacheEntityBase {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id", columnDefinition = "INTEGER")
   public Long id;
 
   @Column(name = "document_id", nullable = false, length = 36)
@@ -69,7 +65,6 @@ public class CmsEntry extends PanacheEntityBase {
   public Long publishedById;
 
   @Convert(converter = JsonMapConverter.class)
-  @JdbcTypeCode(SqlTypes.LONG32VARCHAR)
   @Column(name = "data")
   public Map<String, Object> data = new HashMap<>();
 

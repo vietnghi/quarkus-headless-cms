@@ -1,6 +1,8 @@
 package com.quarkus.cms.deployment;
 
+import com.quarkus.cms.audit.AuditService;
 import com.quarkus.cms.audit.CmsAuditLog;
+import com.quarkus.cms.admin.api.resource.AdminAuditLogResource;
 import com.quarkus.cms.auth.entity.CmsApiToken;
 import com.quarkus.cms.auth.entity.CmsPermission;
 import com.quarkus.cms.auth.entity.CmsRole;
@@ -199,6 +201,10 @@ public class CmsProcessor {
 
     // cms-review beans
     additionalBeans.produce(new AdditionalBeanBuildItem(WorkflowService.class));
+
+    // cms-audit beans
+    additionalBeans.produce(new AdditionalBeanBuildItem(AuditService.class));
+    additionalBeans.produce(new AdditionalBeanBuildItem(AdminAuditLogResource.class));
 
     // cms-media beans
     additionalBeans.produce(new AdditionalBeanBuildItem(MediaConfig.class));
